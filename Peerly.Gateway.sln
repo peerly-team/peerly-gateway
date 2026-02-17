@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peerly.Gateway.ExternalClie
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peerly.Gateway.Tests", "tests\Peerly.Gateway.Tests\Peerly.Gateway.Tests.csproj", "{2F8FE685-B849-484E-8096-63EA511C89A5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peerly.Gateway.Tools", "src\Peerly.Gateway.Tools\Peerly.Gateway.Tools.csproj", "{21E87955-5590-4C58-883E-24BD3C906F54}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,7 @@ Global
 		{91823A56-3794-44AB-9253-8CE6497D4D06} = {6D08F8F6-9DCB-415E-B9DD-9BE259C7C589}
 		{E97DF622-B21B-488F-94AD-6AFB30F2A23F} = {6D08F8F6-9DCB-415E-B9DD-9BE259C7C589}
 		{2F8FE685-B849-484E-8096-63EA511C89A5} = {E3BFDACF-6552-4CA2-886A-E56E099D8B1F}
+		{21E87955-5590-4C58-883E-24BD3C906F54} = {6D08F8F6-9DCB-415E-B9DD-9BE259C7C589}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{22719816-F596-436F-BB62-CE0F096CB7E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -50,5 +53,9 @@ Global
 		{2F8FE685-B849-484E-8096-63EA511C89A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F8FE685-B849-484E-8096-63EA511C89A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F8FE685-B849-484E-8096-63EA511C89A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21E87955-5590-4C58-883E-24BD3C906F54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21E87955-5590-4C58-883E-24BD3C906F54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21E87955-5590-4C58-883E-24BD3C906F54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21E87955-5590-4C58-883E-24BD3C906F54}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

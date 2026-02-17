@@ -7,7 +7,7 @@ public sealed class GenerateUploadUrlProfile : Profile
 {
     public GenerateUploadUrlProfile()
     {
-        CreateMap<GenerateUploadUrlQuery, GenerateUploadUrlRequest>();
-        CreateMap<GenerateUploadUrlResponse, GenerateUploadUrlQueryResponse>();
+        CreateMap<GenerateUploadUrlQuery, V1GenerateUploadUrlRequest>();
+        CreateMap<V1GenerateUploadUrlResponse, GenerateUploadUrlQueryResponse>();
     }
 }

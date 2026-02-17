@@ -15,5 +15,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Peerly.Gateway.Api\Peerly.Gateway.Api.csproj" />
     <ProjectReference Include="..\Peerly.Gateway.ExternalClients\Peerly.Gateway.ExternalClients.csproj" />
+    <ProjectReference Include="..\Peerly.Gateway.Tools\Peerly.Gateway.Tools.csproj" />
   </ItemGroup>
 </Project>

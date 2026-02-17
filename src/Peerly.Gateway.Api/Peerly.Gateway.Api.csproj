@@ -3,6 +3,7 @@
     <!-- Third-party packages -->
     <PackageReference Include="AutoMapper"/>
     <PackageReference Include="AutoMapper.Extensions.EnumMapping"/>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" />
     <PackageReference Include="MediatR"/>
     <PackageReference Include="System.Linq.Async"/>
   </ItemGroup>
@@ -11,5 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Peerly.Gateway.ExternalClients\Peerly.Gateway.ExternalClients.csproj"/>
+    <ProjectReference Include="..\Peerly.Gateway.Tools\Peerly.Gateway.Tools.csproj" />
   </ItemGroup>
 </Project>

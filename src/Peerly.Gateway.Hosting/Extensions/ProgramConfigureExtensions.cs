@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Net.Http.Headers;
+using Peerly.Gateway.Hosting.Middlewares;
 
 namespace Peerly.Gateway.Hosting.Extensions;
 
