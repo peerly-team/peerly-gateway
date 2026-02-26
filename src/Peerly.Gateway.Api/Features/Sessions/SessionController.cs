@@ -9,11 +9,10 @@ using Peerly.Gateway.Api.Features.Sessions.Logout;
 using Peerly.Gateway.Api.Features.Sessions.RefreshAccessToken;
 using Peerly.Gateway.Api.Infrastructure;
 using Peerly.Gateway.Api.Infrastructure.Filters;
-using Peerly.Gateway.Api.Models.Common;
 
 namespace Peerly.Gateway.Api.Features.Sessions;
 
-[Route("api/v1/session")]
+[Route("api/v1/sessions")]
 [RpcExceptionFilter]
 public sealed class SessionController : ApplicationControllerBase
 {
@@ -48,25 +47,27 @@ public sealed class SessionController : ApplicationControllerBase
     [HttpDelete("{userId:long}/token")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesDefaultResponseType(typeof(ProblemDetails))]
-    public async Task<ActionResult<EmptyResponse>> Logout(
+    public async Task<ActionResult> Logout(
         [FromRoute] long userId,
         [FromBody] LogoutRequestBody requestBody,
         CancellationToken cancellationToken)
     {
-        var query = new LogoutQuery
+        var query = new LogoutCommand
         {
             UserId = userId,
             RequestBody = requestBody
         };
 
-        return await _mediator.Send(query, cancellationToken);
+        var response = await _mediator.Send(query, cancellationToken);
+
+        return response.Match(Ok, BadRequest, OtherError);
     }
 
-    [HasPermission(ApiPermission.Refresh)]
+    [AllowAnonymous]
     [HttpPost("{userId:long}/token")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesDefaultResponseType(typeof(ProblemDetails))]
-    public async Task<ActionResult<EmptyResponse>> Refresh(
+    public async Task<ActionResult> Refresh(
         [FromRoute] long userId,
         [FromBody] RefreshRequestBody requestBody,
         CancellationToken cancellationToken)

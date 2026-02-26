@@ -22,7 +22,32 @@ internal sealed class AuthInstaller : IInstaller
             .AddAuthorizationBuilder()
             .AddPolicy(ApiPermission.GenerateUploadUrl.ToString(), p => p.RequireRole(Role.AllRoles))
             .AddPolicy(ApiPermission.Logout.ToString(), p => p.RequireRole(Role.AllRoles))
-            .AddPolicy(ApiPermission.Refresh.ToString(), p => p.RequireRole(Role.AllRoles));
+            .AddPolicy(ApiPermission.ListCourses.ToString(), p => p.RequireRole(Role.AllRoles))
+            .AddPolicy(ApiPermission.AddCourse.ToString(), p => p.RequireRole(Role.EditorRoles))
+            .AddPolicy(ApiPermission.GetCourse.ToString(), p => p.RequireRole(Role.AllRoles))
+            .AddPolicy(ApiPermission.UpdateCourse.ToString(), p => p.RequireRole(Role.EditorRoles))
+            .AddPolicy(ApiPermission.ListCourseParticipants.ToString(), p => p.RequireRole(Role.AllRoles))
+            .AddPolicy(ApiPermission.AddCourseParticipant.ToString(), p => p.RequireRole(Role.EditorRoles))
+            .AddPolicy(ApiPermission.DeleteCourseParticipant.ToString(), p => p.RequireRole(Role.EditorRoles))
+            .AddPolicy(ApiPermission.ListCourseHomeworks.ToString(), p => p.RequireRole(Role.AllRoles))
+            .AddPolicy(ApiPermission.AddCourseHomework.ToString(), p => p.RequireRole(Role.EditorRoles))
+            .AddPolicy(ApiPermission.GetHomework.ToString(), p => p.RequireRole(Role.AllRoles))
+            .AddPolicy(ApiPermission.DeleteCourseHomework.ToString(), p => p.RequireRole(Role.EditorRoles))
+            .AddPolicy(ApiPermission.UpdateHomework.ToString(), p => p.RequireRole(Role.EditorRoles))
+            .AddPolicy(ApiPermission.AddSubmission.ToString(), p => p.RequireRole(Role.AllRoles))
+            .AddPolicy(ApiPermission.UpdateSubmission.ToString(), p => p.RequireRole(Role.AllRoles))
+            .AddPolicy(ApiPermission.ListSubmissions.ToString(), p => p.RequireRole(Role.EditorRoles))
+            .AddPolicy(ApiPermission.DeleteCourse.ToString(), p => p.RequireRole(Role.EditorRoles))
+            .AddPolicy(ApiPermission.ListGroupHomeworks.ToString(), p => p.RequireRole(Role.AllRoles))
+            .AddPolicy(ApiPermission.AddGroupHomework.ToString(), p => p.RequireRole(Role.EditorRoles))
+            .AddPolicy(ApiPermission.GetGroup.ToString(), p => p.RequireRole(Role.AllRoles))
+            .AddPolicy(ApiPermission.ListCourseGroups.ToString(), p => p.RequireRole(Role.AllRoles))
+            .AddPolicy(ApiPermission.AddCourseGroup.ToString(), p => p.RequireRole(Role.EditorRoles))
+            .AddPolicy(ApiPermission.DeleteGroup.ToString(), p => p.RequireRole(Role.EditorRoles))
+            .AddPolicy(ApiPermission.ListGroupParticipants.ToString(), p => p.RequireRole(Role.AllRoles))
+            .AddPolicy(ApiPermission.AddGroupParticipant.ToString(), p => p.RequireRole(Role.EditorRoles))
+            .AddPolicy(ApiPermission.DeleteGroupParticipant.ToString(), p => p.RequireRole(Role.EditorRoles))
+            .AddPolicy(ApiPermission.DeleteGroupHomework.ToString(), p => p.RequireRole(Role.EditorRoles));
         services
             .AddAuthentication(
                 options =>
