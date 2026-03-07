@@ -27,7 +27,6 @@ public sealed class StorageController : ApplicationControllerBase
     public async Task<ActionResult<GenerateUploadUrlQueryResponse>> GenerateUploadUrl(CancellationToken cancellationToken)
     {
         var query = new GenerateUploadUrlQuery();
-
         return await _mediator.Send(query, cancellationToken);
     }
 }

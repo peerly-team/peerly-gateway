@@ -1,6 +1,6 @@
 namespace Peerly.Gateway.Api.Models.Course;
 
-public sealed record Course
+public sealed record CourseInfo
 {
     public required long Id { get; init; }
     public required string Name { get; init; }

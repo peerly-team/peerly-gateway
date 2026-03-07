@@ -1,10 +1,8 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Peerly.Auth.V1;
 using Peerly.Core.V1;
+using Peerly.Gateway.ExternalClients.Extensions;
 using Peerly.Gateway.ExternalClients.Options;
 using Peerly.Gateway.Tools.Abstractions;
 
@@ -28,35 +26,12 @@ internal sealed class GrpcClientsInstaller : IInstaller
 
     private static void AddPeerlyCoreGrpcClients(IServiceCollection services)
     {
-        services.AddGrpcClient<StorageService.StorageServiceClient>(
-                (sp, o) =>
-                {
-                    var options = sp.GetRequiredService<IOptionsSnapshot<PeerlyCoreGrpcClientOptions>>().Value;
-
-                    o.Address = new Uri(options.Target);
-                })
-            // todo: отключить для нелокального окружения - небезопасно
-            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-            {
-                ServerCertificateCustomValidationCallback =
-                    HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-            });
+        services.AddPeerlyCoreGrpcClient<StorageService.StorageServiceClient>();
+        services.AddPeerlyCoreGrpcClient<CourseService.CourseServiceClient>();
     }
 
     private static void AddPeerlyAuthGrpcClients(IServiceCollection services)
     {
-        services.AddGrpcClient<AuthService.AuthServiceClient>(
-                (sp, o) =>
-                {
-                    var options = sp.GetRequiredService<IOptionsSnapshot<PeerlyAuthGrpcClientOptions>>().Value;
-
-                    o.Address = new Uri(options.Target);
-                })
-            // todo: отключить для нелокального окружения - небезопасно
-            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-            {
-                ServerCertificateCustomValidationCallback =
-                    HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-            });
+        services.AddPeerlyAuthGrpcClients<AuthService.AuthServiceClient>();
     }
 }

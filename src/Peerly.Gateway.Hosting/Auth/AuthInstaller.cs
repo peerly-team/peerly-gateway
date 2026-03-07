@@ -20,10 +20,13 @@ internal sealed class AuthInstaller : IInstaller
         services.AddMemoryCache();
         services
             .AddAuthorizationBuilder()
-            .AddPolicy(ApiPermission.GenerateUploadUrl.ToString(), p => p.RequireRole(Role.AllRoles))
+            // Authorization
             .AddPolicy(ApiPermission.Logout.ToString(), p => p.RequireRole(Role.AllRoles))
-            .AddPolicy(ApiPermission.ListCourses.ToString(), p => p.RequireRole(Role.AllRoles))
-            .AddPolicy(ApiPermission.AddCourse.ToString(), p => p.RequireRole(Role.EditorRoles))
+            // Storage
+            .AddPolicy(ApiPermission.GenerateUploadUrl.ToString(), p => p.RequireRole(Role.AllRoles))
+            // Courses
+            .AddPolicy(ApiPermission.CreateCourse.ToString(), p => p.RequireRole(Role.Teacher))
+            .AddPolicy(ApiPermission.ListCourses.ToString(), p => p.RequireRole(Role.Admin))
             .AddPolicy(ApiPermission.GetCourse.ToString(), p => p.RequireRole(Role.AllRoles))
             .AddPolicy(ApiPermission.UpdateCourse.ToString(), p => p.RequireRole(Role.EditorRoles))
             .AddPolicy(ApiPermission.ListCourseParticipants.ToString(), p => p.RequireRole(Role.AllRoles))
@@ -47,7 +50,9 @@ internal sealed class AuthInstaller : IInstaller
             .AddPolicy(ApiPermission.ListGroupParticipants.ToString(), p => p.RequireRole(Role.AllRoles))
             .AddPolicy(ApiPermission.AddGroupParticipant.ToString(), p => p.RequireRole(Role.EditorRoles))
             .AddPolicy(ApiPermission.DeleteGroupParticipant.ToString(), p => p.RequireRole(Role.EditorRoles))
-            .AddPolicy(ApiPermission.DeleteGroupHomework.ToString(), p => p.RequireRole(Role.EditorRoles));
+            .AddPolicy(ApiPermission.DeleteGroupHomework.ToString(), p => p.RequireRole(Role.EditorRoles))
+            .AddPolicy(ApiPermission.ListStudentCourses.ToString(), p => p.RequireRole(Role.Student))
+            .AddPolicy(ApiPermission.ListTeacherCourses.ToString(), p => p.RequireRole(Role.Teacher));
         services
             .AddAuthentication(
                 options =>

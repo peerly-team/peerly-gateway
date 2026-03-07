@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using Peerly.Gateway.Api.Models.Course;
 
-namespace Peerly.Gateway.Api.Features.Courses.ListCourses;
+namespace Peerly.Gateway.Api.Features.Teachers.ListTeacherCourses;
 
-public sealed record ListCoursesQueryResponse
+public sealed class ListTeacherCoursesQueryResponse
 {
     public required IReadOnlyCollection<CourseInfo> CourseInfos { get; init; }
 }

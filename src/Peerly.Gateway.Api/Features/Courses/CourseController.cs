@@ -1,18 +1,16 @@
-using System;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Peerly.Gateway.Api.Features.Courses.AddCourse;
+using Peerly.Gateway.Api.Features.Courses.CreateCourse;
 using Peerly.Gateway.Api.Features.Courses.DeleteCourse;
 using Peerly.Gateway.Api.Features.Courses.GetCourse;
 using Peerly.Gateway.Api.Features.Courses.ListCourses;
 using Peerly.Gateway.Api.Features.Courses.UpdateCourse;
 using Peerly.Gateway.Api.Infrastructure;
 using Peerly.Gateway.Api.Infrastructure.Filters;
-using Peerly.Gateway.Api.Models.Auth;
 using Peerly.Gateway.Api.Models.Course;
 
 namespace Peerly.Gateway.Api.Features.Courses;
@@ -28,7 +26,6 @@ public sealed partial class CourseController : ApplicationControllerBase
         _mediator = mediator;
     }
 
-    // NOTE: отдает список курсов по фильтру для пользователя
     [HasPermission(ApiPermission.ListCourses)]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -40,59 +37,28 @@ public sealed partial class CourseController : ApplicationControllerBase
     {
         var query = new ListCoursesQuery
         {
-            UserId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!),
-            Role = Enum.Parse<Role>(User.FindFirstValue(ClaimTypes.Role)!),
             Filter = filter,
             PaginationInfo = paginationInfo
         };
-
-        return await Task.FromResult(
-            new ListCoursesQueryResponse
-            {
-                Courses =
-                [
-                    new Course
-                    {
-                        Id = 1,
-                        Name = "test",
-                        Status = CourseStatus.Draft,
-                        StudentCount = 1,
-                        HomeworkCount = 0
-                    },
-                    new Course
-                    {
-                        Id = 2,
-                        Name = "test-2",
-                        Status = CourseStatus.InProgress,
-                        StudentCount = 12,
-                        HomeworkCount = 123
-                    }
-                ]
-            });
-
-        // todo: прикрутить ручку к peerly-core
-        //return await _mediator.Send(query, cancellationToken);
+        return await _mediator.Send(query, cancellationToken);
     }
 
-    // NOTE: создает новый курс
-    [HasPermission(ApiPermission.AddCourse)]
+    [HasPermission(ApiPermission.CreateCourse)]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesDefaultResponseType(typeof(ProblemDetails))]
-    public async Task<ActionResult> AddCourse(
-        [FromBody] AddCourseRequestBody requestBody,
+    public async Task<ActionResult> CreateCourse(
+        [FromBody] CreateCourseRequestBody requestBody,
         CancellationToken cancellationToken)
     {
-        var command = new AddCourseCommand
+        var command = new CreateCourseCommand
         {
-            UserId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!),
+            TeacherId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!),
             RequestBody = requestBody
         };
+        var response = await _mediator.Send(command, cancellationToken);
 
-        return await Task.FromResult(NoContent());
-
-        // todo: прикрутить ручку к peerly-core
-        //return await _mediator.Send(query, cancellationToken);
+        return response.Match(Ok, BadRequest, OtherError);
     }
 
     // NOTE: отдает информацию о курсе
@@ -112,7 +78,7 @@ public sealed partial class CourseController : ApplicationControllerBase
         return await Task.FromResult(
             new GetCourseQueryResponse
             {
-                Course = new Course
+                CourseInfo = new CourseInfo
                 {
                     Id = 1,
                     Name = "test",

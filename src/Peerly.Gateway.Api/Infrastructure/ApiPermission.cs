@@ -5,7 +5,7 @@ public enum ApiPermission
     GenerateUploadUrl = 1,
     Logout = 2,
     ListCourses = 3,
-    AddCourse = 4,
+    CreateCourse = 4,
     GetCourse = 5,
     UpdateCourse = 6,
     ListCourseParticipants = 7,
@@ -29,5 +29,7 @@ public enum ApiPermission
     ListGroupParticipants = 25,
     AddGroupParticipant = 26,
     DeleteGroupParticipant = 27,
-    DeleteGroupHomework = 28
+    DeleteGroupHomework = 28,
+    ListStudentCourses = 29,
+    ListTeacherCourses = 30
 }

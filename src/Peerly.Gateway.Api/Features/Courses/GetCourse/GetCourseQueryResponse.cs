@@ -4,5 +4,5 @@ namespace Peerly.Gateway.Api.Features.Courses.GetCourse;
 
 public sealed record GetCourseQueryResponse
 {
-    public required Course Course { get; init; }
+    public required CourseInfo CourseInfo { get; init; }
 }

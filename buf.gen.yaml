@@ -7,11 +7,13 @@ plugins:
     out: src/Peerly.Gateway.ExternalClients/obj/buf.protogen
     opt:
       - file_extension=.g.cs
+      - base_namespace=
   - remote: buf.build/grpc/csharp:v1.76.0
     out: src/Peerly.Gateway.ExternalClients/obj/buf.protogen
     opt:
       - no_server
       - file_suffix=Grpc.g.cs
+      - base_namespace=
 inputs:
   - module: buf.build/peerly/peerly-core
   - module: buf.build/peerly/peerly-auth
