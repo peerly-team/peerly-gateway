@@ -6,7 +6,7 @@ namespace Peerly.Gateway.Api.Features.Courses.UpdateCourse;
 
 public sealed record UpdateCourseCommand : IRequest<Result<EmptyResponse>>
 {
-    public required long UserId { get; init; }
+    public required long TeacherId { get; init; }
     public required long CourseId { get; init; }
     public required UpdateCourseRequestBody RequestBody { get; init; }
 }
@@ -14,6 +14,6 @@ public sealed record UpdateCourseCommand : IRequest<Result<EmptyResponse>>
 public sealed record UpdateCourseRequestBody
 {
     public required string Name { get; init; }
-    public required string Description { get; init; }
+    public string? Description { get; init; }
     public required CourseStatus Status { get; init; }
 }

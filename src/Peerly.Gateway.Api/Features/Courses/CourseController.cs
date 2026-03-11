@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -53,7 +52,7 @@ public sealed partial class CourseController : ApplicationControllerBase
     {
         var command = new CreateCourseCommand
         {
-            TeacherId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!),
+            TeacherId = User.GetUserId(),
             RequestBody = requestBody
         };
         var response = await _mediator.Send(command, cancellationToken);
@@ -92,7 +91,6 @@ public sealed partial class CourseController : ApplicationControllerBase
         //return await _mediator.Send(query, cancellationToken);
     }
 
-    // NOTE: обновляет информацию о курсе
     [HasPermission(ApiPermission.UpdateCourse)]
     [HttpPut("{courseId:long}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -104,18 +102,15 @@ public sealed partial class CourseController : ApplicationControllerBase
     {
         var query = new UpdateCourseCommand
         {
-            UserId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!),
+            TeacherId = User.GetUserId(),
             CourseId = courseId,
             RequestBody = requestBody
         };
+        var response = await _mediator.Send(query, cancellationToken);
 
-        return await Task.FromResult(NoContent());
-
-        // todo: прикрутить ручку к peerly-core
-        //return await _mediator.Send(query, cancellationToken);
+        return response.Match(Ok, BadRequest, OtherError);
     }
 
-    // NOTE: удаляет курс, только если курс в статусе черновик
     [HasPermission(ApiPermission.DeleteCourse)]
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -126,13 +121,11 @@ public sealed partial class CourseController : ApplicationControllerBase
     {
         var command = new DeleteCourseCommand
         {
-            UserId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!),
+            TeacherId = User.GetUserId(),
             RequestBody = requestBody
         };
+        var response = await _mediator.Send(command, cancellationToken);
 
-        return await Task.FromResult(NoContent());
-
-        // todo: прикрутить ручку к peerly-core
-        //return await _mediator.Send(query, cancellationToken);
+        return response.Match(Ok, BadRequest, OtherError);
     }
 }

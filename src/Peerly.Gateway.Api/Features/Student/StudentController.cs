@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -32,7 +31,7 @@ public sealed class StudentController : ApplicationControllerBase
         [FromQuery] PaginationInfo paginationInfo,
         CancellationToken cancellationToken)
     {
-        if (studentId != long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!))
+        if (studentId != User.GetUserId())
         {
             return Forbid();
         }

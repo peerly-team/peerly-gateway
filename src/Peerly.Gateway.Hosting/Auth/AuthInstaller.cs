@@ -26,9 +26,12 @@ internal sealed class AuthInstaller : IInstaller
             .AddPolicy(ApiPermission.GenerateUploadUrl.ToString(), p => p.RequireRole(Role.AllRoles))
             // Courses
             .AddPolicy(ApiPermission.CreateCourse.ToString(), p => p.RequireRole(Role.Teacher))
+            .AddPolicy(ApiPermission.UpdateCourse.ToString(), p => p.RequireRole(Role.Teacher))
             .AddPolicy(ApiPermission.ListCourses.ToString(), p => p.RequireRole(Role.Admin))
+            .AddPolicy(ApiPermission.ListTeacherCourses.ToString(), p => p.RequireRole(Role.Teacher))
+            .AddPolicy(ApiPermission.ListStudentCourses.ToString(), p => p.RequireRole(Role.Student))
+            .AddPolicy(ApiPermission.DeleteCourse.ToString(), p => p.RequireRole(Role.Teacher))
             .AddPolicy(ApiPermission.GetCourse.ToString(), p => p.RequireRole(Role.AllRoles))
-            .AddPolicy(ApiPermission.UpdateCourse.ToString(), p => p.RequireRole(Role.EditorRoles))
             .AddPolicy(ApiPermission.ListCourseParticipants.ToString(), p => p.RequireRole(Role.AllRoles))
             .AddPolicy(ApiPermission.AddCourseParticipant.ToString(), p => p.RequireRole(Role.EditorRoles))
             .AddPolicy(ApiPermission.DeleteCourseParticipant.ToString(), p => p.RequireRole(Role.EditorRoles))
@@ -40,7 +43,6 @@ internal sealed class AuthInstaller : IInstaller
             .AddPolicy(ApiPermission.AddSubmission.ToString(), p => p.RequireRole(Role.AllRoles))
             .AddPolicy(ApiPermission.UpdateSubmission.ToString(), p => p.RequireRole(Role.AllRoles))
             .AddPolicy(ApiPermission.ListSubmissions.ToString(), p => p.RequireRole(Role.EditorRoles))
-            .AddPolicy(ApiPermission.DeleteCourse.ToString(), p => p.RequireRole(Role.EditorRoles))
             .AddPolicy(ApiPermission.ListGroupHomeworks.ToString(), p => p.RequireRole(Role.AllRoles))
             .AddPolicy(ApiPermission.AddGroupHomework.ToString(), p => p.RequireRole(Role.EditorRoles))
             .AddPolicy(ApiPermission.GetGroup.ToString(), p => p.RequireRole(Role.AllRoles))
@@ -50,9 +52,7 @@ internal sealed class AuthInstaller : IInstaller
             .AddPolicy(ApiPermission.ListGroupParticipants.ToString(), p => p.RequireRole(Role.AllRoles))
             .AddPolicy(ApiPermission.AddGroupParticipant.ToString(), p => p.RequireRole(Role.EditorRoles))
             .AddPolicy(ApiPermission.DeleteGroupParticipant.ToString(), p => p.RequireRole(Role.EditorRoles))
-            .AddPolicy(ApiPermission.DeleteGroupHomework.ToString(), p => p.RequireRole(Role.EditorRoles))
-            .AddPolicy(ApiPermission.ListStudentCourses.ToString(), p => p.RequireRole(Role.Student))
-            .AddPolicy(ApiPermission.ListTeacherCourses.ToString(), p => p.RequireRole(Role.Teacher));
+            .AddPolicy(ApiPermission.DeleteGroupHomework.ToString(), p => p.RequireRole(Role.EditorRoles));
         services
             .AddAuthentication(
                 options =>

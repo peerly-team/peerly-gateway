@@ -1,6 +1,5 @@
 using AutoMapper;
 using Peerly.Auth.V1;
-using Peerly.Gateway.Api.Models.Auth;
 using Peerly.Gateway.Api.Models.Common;
 
 namespace Peerly.Gateway.Api.Features.Sessions.RefreshAccessToken;
@@ -14,6 +13,5 @@ public sealed class RefreshAccessTokenProfile : Profile
         CreateMap<RefreshRequestBody, V1RefreshRequest>();
         CreateMap<V1RefreshResponse, Result<RefreshCommandResponse>>();
         CreateMap<V1RefreshResponse.Types.Success, RefreshCommandResponse>();
-        CreateMap<Token, AuthToken>();
     }
 }

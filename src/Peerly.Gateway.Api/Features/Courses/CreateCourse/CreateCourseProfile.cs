@@ -12,6 +12,6 @@ public sealed class CreateCourseProfile : Profile
             .IncludeMembers(c => c.RequestBody);
         CreateMap<CreateCourseRequestBody, V1CreateCourseRequest>();
         CreateMap<V1CreateCourseResponse, Result<EmptyResponse>>();
-        CreateMap<V1CreateCourseResponse.Types.Success, EmptyResponse>();
+        CreateMap<V1CreateCourseResponse.Types.Success, EmptyResponse>(MemberList.Source);
     }
 }
