@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Peerly.Gateway.Api.Features.Student.GetStudentCourse;
 using Peerly.Gateway.Api.Features.Student.ListStudentCourses;
 using Peerly.Gateway.Api.Infrastructure;
 using Peerly.Gateway.Api.Infrastructure.Filters;
@@ -41,6 +42,28 @@ public sealed class StudentController : ApplicationControllerBase
             StudentId = studentId,
             Filter = filter,
             PaginationInfo = paginationInfo
+        };
+        return await _mediator.Send(query, cancellationToken);
+    }
+
+    [HasPermission(ApiPermission.GetStudentCourse)]
+    [HttpGet("{studentId:long}/courses/{courseId:long}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult<GetStudentCourseQueryResponse>> GetCourse(
+        [FromRoute] long studentId,
+        [FromRoute] long courseId,
+        CancellationToken cancellationToken)
+    {
+        if (studentId != User.GetUserId())
+        {
+            return Forbid();
+        }
+
+        var query = new GetStudentCourseQuery
+        {
+            StudentId = studentId,
+            CourseId = courseId
         };
         return await _mediator.Send(query, cancellationToken);
     }

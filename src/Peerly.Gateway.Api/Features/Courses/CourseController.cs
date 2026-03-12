@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Peerly.Gateway.Api.Features.Courses.CreateCourse;
 using Peerly.Gateway.Api.Features.Courses.DeleteCourse;
-using Peerly.Gateway.Api.Features.Courses.GetCourse;
 using Peerly.Gateway.Api.Features.Courses.ListCourses;
 using Peerly.Gateway.Api.Features.Courses.UpdateCourse;
 using Peerly.Gateway.Api.Infrastructure;
@@ -58,37 +57,6 @@ public sealed partial class CourseController : ApplicationControllerBase
         var response = await _mediator.Send(command, cancellationToken);
 
         return response.Match(Ok, BadRequest, OtherError);
-    }
-
-    // NOTE: отдает информацию о курсе
-    [HasPermission(ApiPermission.GetCourse)]
-    [HttpGet("{courseId:long}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesDefaultResponseType(typeof(ProblemDetails))]
-    public async Task<ActionResult<GetCourseQueryResponse>> GetCourse(
-        [FromRoute] long courseId,
-        CancellationToken cancellationToken)
-    {
-        var query = new GetCourseQuery
-        {
-            CourseId = courseId
-        };
-
-        return await Task.FromResult(
-            new GetCourseQueryResponse
-            {
-                CourseInfo = new CourseInfo
-                {
-                    Id = 1,
-                    Name = "test",
-                    Status = CourseStatus.Draft,
-                    StudentCount = 1,
-                    HomeworkCount = 0
-                }
-            });
-
-        // todo: прикрутить ручку к peerly-core
-        //return await _mediator.Send(query, cancellationToken);
     }
 
     [HasPermission(ApiPermission.UpdateCourse)]
