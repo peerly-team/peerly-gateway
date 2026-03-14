@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <Compile Include="obj\buf.protogen\**\*.cs">
+      <Visible>false</Visible>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Third-party packages -->
+    <PackageReference Include="Google.Protobuf"/>
+    <PackageReference Include="Grpc.Core"/>
+    <PackageReference Include="Grpc.Net.Client"/>
+    <PackageReference Include="Grpc.Net.ClientFactory" />
+  </ItemGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Peerly.Gateway.Tools\Peerly.Gateway.Tools.csproj" />
+  </ItemGroup>
+</Project>

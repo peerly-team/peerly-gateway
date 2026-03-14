@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <!-- Third-party packages -->
+  <PropertyGroup>
+    <RootNamespace>Peerly.Gateway.Hosting</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.EnumMapping" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" />
+    <PackageReference Include="Grpc.AspNetCore"/>
+    <PackageReference Include="Grpc.AspNetCore.Server.Reflection"/>
+    <PackageReference Include="IdentityModel" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+    <PackageReference Include="Swashbuckle.AspNetCore" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Peerly.Gateway.Api\Peerly.Gateway.Api.csproj" />
+    <ProjectReference Include="..\Peerly.Gateway.ExternalClients\Peerly.Gateway.ExternalClients.csproj" />
+    <ProjectReference Include="..\Peerly.Gateway.Tools\Peerly.Gateway.Tools.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,36 @@
+namespace Peerly.Gateway.Api.Infrastructure;
+
+public enum ApiPermission
+{
+    GenerateUploadUrl = 1,
+    Logout = 2,
+    ListCourses = 3,
+    CreateCourse = 4,
+    GetStudentCourse = 5,
+    UpdateCourse = 6,
+    ListCourseParticipants = 7,
+    AddCourseParticipant = 8,
+    DeleteCourseParticipant = 9,
+    ListStudentCourseHomeworks = 10,
+    AddCourseHomework = 11,
+    GetHomework = 12,
+    DeleteCourseHomework = 13,
+    UpdateHomework = 14,
+    AddSubmission = 15,
+    UpdateSubmission = 16,
+    ListSubmissions = 17,
+    DeleteCourse = 18,
+    ListGroupHomeworks = 19,
+    AddGroupHomework = 20,
+    GetGroup = 21,
+    ListCourseGroups = 22,
+    AddCourseGroup = 23,
+    DeleteGroup = 24,
+    ListGroupParticipants = 25,
+    AddGroupParticipant = 26,
+    DeleteGroupParticipant = 27,
+    DeleteGroupHomework = 28,
+    ListStudentCourses = 29,
+    ListTeacherCourses = 30,
+    GetTeacherCourse = 31
+}
