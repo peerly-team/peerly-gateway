@@ -23,23 +23,17 @@ public sealed class TeacherController : ApplicationControllerBase
     }
 
     [HasPermission(ApiPermission.ListTeacherCourses)]
-    [HttpGet("{teacherId:long}/courses")]
+    [HttpGet("courses")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesDefaultResponseType(typeof(ProblemDetails))]
     public async Task<ActionResult<ListTeacherCoursesQueryResponse>> ListStudentCourses(
-        [FromRoute] long teacherId,
         [FromQuery] ListTeacherCoursesFilter filter,
         [FromQuery] PaginationInfo paginationInfo,
         CancellationToken cancellationToken)
     {
-        if (teacherId != User.GetUserId())
-        {
-            return Forbid();
-        }
-
         var query = new ListTeacherCoursesQuery
         {
-            TeacherId = teacherId,
+            TeacherId = User.GetUserId(),
             Filter = filter,
             PaginationInfo = paginationInfo
         };
@@ -47,22 +41,16 @@ public sealed class TeacherController : ApplicationControllerBase
     }
 
     [HasPermission(ApiPermission.GetTeacherCourse)]
-    [HttpGet("{teacherId:long}/courses/{courseId:long}")]
+    [HttpGet("courses/{courseId:long}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesDefaultResponseType(typeof(ProblemDetails))]
     public async Task<ActionResult<GetTeacherCourseQueryResponse>> GetCourse(
-        [FromRoute] long teacherId,
         [FromRoute] long courseId,
         CancellationToken cancellationToken)
     {
-        if (teacherId != User.GetUserId())
-        {
-            return Forbid();
-        }
-
         var query = new GetTeacherCourseQuery
         {
-            TeacherId = teacherId,
+            TeacherId = User.GetUserId(),
             CourseId = courseId
         };
         return await _mediator.Send(query, cancellationToken);

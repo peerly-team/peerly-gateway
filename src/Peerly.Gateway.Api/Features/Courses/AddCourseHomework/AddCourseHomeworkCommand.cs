@@ -7,7 +7,7 @@ namespace Peerly.Gateway.Api.Features.Courses.AddCourseHomework;
 public sealed record AddCourseHomeworkCommand : IRequest<Result<EmptyResponse>>
 {
     public required long CourseId { get; init; }
-    public required long UserId { get; init; }
+    public required long TeacherId { get; init; }
     public required AddCourseHomeworkRequestBody RequestBody { get; init; }
 }
 

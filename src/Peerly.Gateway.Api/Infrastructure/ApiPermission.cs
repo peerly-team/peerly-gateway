@@ -11,7 +11,7 @@ public enum ApiPermission
     ListCourseParticipants = 7,
     AddCourseParticipant = 8,
     DeleteCourseParticipant = 9,
-    ListCourseHomeworks = 10,
+    ListStudentCourseHomeworks = 10,
     AddCourseHomework = 11,
     GetHomework = 12,
     DeleteCourseHomework = 13,
