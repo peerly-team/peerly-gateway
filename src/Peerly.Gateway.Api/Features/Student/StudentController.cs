@@ -4,7 +4,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Peerly.Gateway.Api.Features.Student.GetStudentCourse;
-using Peerly.Gateway.Api.Features.Student.ListStudentCourseHomeworks;
 using Peerly.Gateway.Api.Features.Student.ListStudentCourses;
 using Peerly.Gateway.Api.Infrastructure;
 using Peerly.Gateway.Api.Infrastructure.Filters;
@@ -55,27 +54,5 @@ public sealed class StudentController : ApplicationControllerBase
             CourseId = courseId
         };
         return await _mediator.Send(query, cancellationToken);
-    }
-
-    [HasPermission(ApiPermission.ListStudentCourseHomeworks)]
-    [HttpGet("courses/{courseId:long}/homeworks")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesDefaultResponseType(typeof(ProblemDetails))]
-    public async Task<ActionResult<ListStudentCourseHomeworksQueryResponse>> ListStudentCourseHomeworks(
-        [FromRoute] long courseId,
-        [FromQuery] ListStudentCourseHomeworksFilter filter,
-        CancellationToken cancellationToken)
-    {
-        var query = new ListStudentCourseHomeworksQuery
-        {
-            StudentId = User.GetUserId(),
-            CourseId = courseId,
-            Filter = filter
-        };
-
-        return await Task.FromResult(new ListStudentCourseHomeworksQueryResponse());
-
-        // todo: прикрутить к peerly-core
-        //return await _mediator.Send(query, cancellationToken);
     }
 }
