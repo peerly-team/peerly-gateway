@@ -1,100 +1,52 @@
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Peerly.Gateway.Api.Features.Homeworks.AddSubmission;
-using Peerly.Gateway.Api.Features.Homeworks.ListSubmissions;
-using Peerly.Gateway.Api.Features.Homeworks.UpdateSubmission;
+using Peerly.Gateway.Api.Features.Homeworks.CreateSubmittedHomework;
+using Peerly.Gateway.Api.Features.Homeworks.CreateSubmittedHomeworkFile;
 using Peerly.Gateway.Api.Infrastructure;
-using Peerly.Gateway.Api.Models.Submission;
 
 namespace Peerly.Gateway.Api.Features.Homeworks;
 
 public sealed partial class HomeworkController
 {
-    /// <summary>
-    /// Для преподавателя выводит список ответов студентов, а для студента только его ответ
-    /// </summary>
-    /// <returns></returns>
-    [HasPermission(ApiPermission.ListSubmissions)]
-    [HttpGet("{homeworkId:long}/submissions")]
+    [HasPermission(ApiPermission.CreateSubmittedHomework)]
+    [HttpPost("{homeworkId:long}/submit")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesDefaultResponseType(typeof(ProblemDetails))]
-    public async Task<ActionResult<ListSubmissionsQueryResponse>> ListSubmissions(
+    public async Task<ActionResult<CreateSubmittedHomeworkCommandResponse>> CreateSubmittedHomework(
         [FromRoute] long homeworkId,
+        [FromBody] CreateSubmittedHomeworkRequestBody requestBody,
         CancellationToken cancellationToken)
     {
-        var query = new ListSubmissionsQuery
+        var query = new CreateSubmittedHomeworkCommand
         {
             HomeworkId = homeworkId,
-            UserId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!)
-        };
-
-        return await Task.FromResult(new ListSubmissionsQueryResponse
-        {
-            Submissions =
-            [
-                new Submission
-                {
-                    UserId = 1,
-                    Comment = "В первой задаче реализация через ..., а в пятой не успел сделать это.",
-                    Files = []
-                },
-                new Submission
-                {
-                    UserId = 2,
-                    Files = []
-                }
-            ]
-        });
-
-        // todo: прикрутить ручку к peerly-core
-        //return await _mediator.Send(query, cancellationToken);
-    }
-
-    [HasPermission(ApiPermission.AddSubmission)]
-    [HttpPost("{homeworkId:long}/submissions")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesDefaultResponseType(typeof(ProblemDetails))]
-    public async Task<ActionResult> AddSubmission(
-        [FromRoute] long homeworkId,
-        [FromBody] AddSubmissionRequestBody requestBody,
-        CancellationToken cancellationToken)
-    {
-        var query = new AddSubmissionCommand
-        {
-            HomeworkId = homeworkId,
-            UserId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!),
+            StudentId = User.GetUserId(),
             RequestBody = requestBody
         };
+        var response = await _mediator.Send(query, cancellationToken);
 
-        return await Task.FromResult(NoContent());
-
-        // todo: прикрутить ручку к peerly-core
-        //return await _mediator.Send(query, cancellationToken);
+        return response.Match(Ok, BadRequest, OtherError);
     }
 
-    [HasPermission(ApiPermission.UpdateSubmission)]
-    [HttpPut("{homeworkId:long}/submissions/{submissionId:long}")]
+    [HasPermission(ApiPermission.CreateSubmittedHomework)]
+    [HttpPost("submit/{submittedHomeworkId}/file")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesDefaultResponseType(typeof(ProblemDetails))]
-    public async Task<ActionResult> UpdateSubmission(
-        [FromRoute] long homeworkId,
-        [FromRoute] long submissionId,
-        [FromBody] UpdateSubmissionRequestBody requestBody,
+    public async Task<ActionResult<CreateSubmittedHomeworkFileCommandResponse>> CreateSubmittedHomeworkFile(
+        [FromRoute] long submittedHomeworkId,
+        [FromBody] CreateSubmittedHomeworkFileRequestBody requestBody,
         CancellationToken cancellationToken)
     {
-        var query = new UpdateSubmissionCommand
+        var query = new CreateSubmittedHomeworkFileCommand
         {
-            HomeworkId = homeworkId,
-            UserId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!),
+            SubmittedHomeworkId = submittedHomeworkId,
+            StudentId = User.GetUserId(),
             RequestBody = requestBody
         };
+        var response = await _mediator.Send(query, cancellationToken);
 
-        return await Task.FromResult(NoContent());
-
-        // todo: прикрутить ручку к peerly-core
-        //return await _mediator.Send(query, cancellationToken);
+        return response.Match(Ok, BadRequest, OtherError);
     }
 }

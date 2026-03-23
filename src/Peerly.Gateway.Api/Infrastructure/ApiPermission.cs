@@ -15,7 +15,7 @@ public enum ApiPermission
     AddCourseHomework = 11,
     GetHomework = 12,
     DeleteCourseHomework = 13,
-    UpdateHomework = 14,
+    UpdateHomeworkStatus = 14,
     AddSubmission = 15,
     UpdateSubmission = 16,
     ListSubmissions = 17,
@@ -32,5 +32,8 @@ public enum ApiPermission
     DeleteGroupHomework = 28,
     ListStudentCourses = 29,
     ListTeacherCourses = 30,
-    GetTeacherCourse = 31
+    GetTeacherCourse = 31,
+    GenerateDownloadUrl = 32,
+    CreateHomeworkFile = 33,
+    CreateSubmittedHomework = 34
 }
