@@ -1,7 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Peerly.Gateway.Api.Infrastructure;
+using Peerly.Gateway.Api.Infrastructure.Abstractions;
 using Peerly.Gateway.Hosting.Auth.Configurations;
+using Peerly.Gateway.Hosting.Auth.Cookies;
 using Peerly.Gateway.Hosting.Auth.Data;
 using Peerly.Gateway.Tools.Abstractions;
 
@@ -15,9 +17,13 @@ internal sealed class AuthInstaller : IInstaller
         services
             .AddOptions<AuthHandlerOptions>()
             .BindConfiguration(AuthHandlerOptions.SectionName);
+        services
+            .AddOptions<AuthCookieOptions>()
+            .BindConfiguration(AuthCookieOptions.SectionName);
 
         services.AddHttpContextAccessor();
         services.AddMemoryCache();
+        services.AddScoped<IAuthCookiesManager, AuthCookiesWriter>();
         services
             .AddAuthorizationBuilder()
             // Authorization
