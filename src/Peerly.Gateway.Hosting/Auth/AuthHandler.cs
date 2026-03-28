@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Peerly.Gateway.Hosting.Auth.Configurations;
+using Peerly.Gateway.Hosting.Auth.Cookies;
 using Peerly.Gateway.Hosting.Auth.Providers.Jwks.Abstractions;
 
 namespace Peerly.Gateway.Hosting.Auth;
@@ -21,26 +22,32 @@ public sealed class AuthHandler : AuthenticationHandler<AuthHandlerOptions>
 
     private readonly IJwksProvider _jwksProvider;
     private readonly AuthHandlerOptions _options;
+    private readonly AuthCookieOptions _cookieOptions;
 
     public AuthHandler(
         IOptionsMonitor<AuthHandlerOptions> options,
+        IOptionsSnapshot<AuthCookieOptions> cookieOptions,
         ILoggerFactory logger,
         UrlEncoder encoder,
         IJwksProvider jwksProvider)
         : base(options, logger, encoder)
     {
         ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(cookieOptions);
 
         _jwksProvider = jwksProvider;
         _options = options.CurrentValue;
+        _cookieOptions = cookieOptions.Value;
     }
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         var handler = new JwtSecurityTokenHandler();
-        if (!TryGetJwtSecurityToken(handler, out var jwt, out var jwtSecurityToken))
+        if (!TryGetJwtSecurityToken(handler, out var jwt, out var jwtSecurityToken, out var tokenWasProvided))
         {
-            return AuthenticateResult.Fail("Invalid authorization token");
+            return tokenWasProvided
+                ? AuthenticateResult.Fail("Invalid authorization token")
+                : AuthenticateResult.NoResult();
         }
 
         var signingKeys = await GetSecurityKeysForKidAsync(jwtSecurityToken!.Header.Kid, Context.RequestAborted);
@@ -80,12 +87,17 @@ public sealed class AuthHandler : AuthenticationHandler<AuthHandlerOptions>
         }
     }
 
-    private bool TryGetJwtSecurityToken(JwtSecurityTokenHandler handler, out string? jwt, out JwtSecurityToken? jwtSecurityToken)
+    private bool TryGetJwtSecurityToken(
+        JwtSecurityTokenHandler handler,
+        out string? jwt,
+        out JwtSecurityToken? jwtSecurityToken,
+        out bool tokenWasProvided)
     {
         jwtSecurityToken = null;
         jwt = null;
+        tokenWasProvided = false;
 
-        if (!TryGetJwtFromAuthorization(out jwt) || string.IsNullOrWhiteSpace(jwt))
+        if (!TryGetJwt(out jwt, out tokenWasProvided) || string.IsNullOrWhiteSpace(jwt))
         {
             return false;
         }
@@ -94,6 +106,10 @@ public sealed class AuthHandler : AuthenticationHandler<AuthHandlerOptions>
         {
             jwtSecurityToken = handler.ReadJwtToken(jwt);
             return true;
+        }
+        catch (ArgumentException)
+        {
+            return false;
         }
         catch (SecurityTokenException)
         {
@@ -122,6 +138,24 @@ public sealed class AuthHandler : AuthenticationHandler<AuthHandlerOptions>
         return keysForKid;
     }
 
+    private bool TryGetJwt(out string? jwt, out bool tokenWasProvided)
+    {
+        if (TryGetJwtFromAuthorization(out jwt))
+        {
+            tokenWasProvided = true;
+            return true;
+        }
+
+        if (TryGetJwtFromAccessCookie(out jwt))
+        {
+            tokenWasProvided = true;
+            return true;
+        }
+
+        tokenWasProvided = false;
+        return false;
+    }
+
     private bool TryGetJwtFromAuthorization(out string? jwt)
     {
         jwt = null;
@@ -139,5 +173,18 @@ public sealed class AuthHandler : AuthenticationHandler<AuthHandlerOptions>
         }
 
         return true;
+    }
+
+    private bool TryGetJwtFromAccessCookie(out string? jwt)
+    {
+        jwt = null;
+
+        if (!Request.Cookies.TryGetValue(_cookieOptions.AccessName, out jwt) || string.IsNullOrWhiteSpace(jwt))
+        {
+            return false;
+        }
+
+        jwt = jwt.Trim();
+        return !string.IsNullOrWhiteSpace(jwt);
     }
 }

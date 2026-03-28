@@ -33,11 +33,8 @@ public sealed class UserController : ApplicationControllerBase
         {
             RequestBody = requestBody
         };
-
         var response = await _mediator.Send(query, cancellationToken);
 
-        // todo: вставить токен в куки
-
-        return response.Match(Ok, BadRequest, OtherError);
+        return MatchResult(response, success => Ok(new RegisterResponseBody { UserId = success.UserId }));
     }
 }

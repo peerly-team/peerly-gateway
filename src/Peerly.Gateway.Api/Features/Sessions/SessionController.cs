@@ -35,53 +35,51 @@ public sealed class SessionController : ApplicationControllerBase
         {
             RequestBody = requestBody
         };
-
         var response = await _mediator.Send(query, cancellationToken);
 
-        // todo: вставить токен в куки
-
-        return response.Match(Ok, BadRequest, OtherError);
+        return MatchResult(response, success => Ok(new LoginResponseBody { UserId = success.UserId }));
     }
 
     [HasPermission(ApiPermission.Logout)]
-    [HttpDelete("{userId:long}/token")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [HttpDelete("token")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesDefaultResponseType(typeof(ProblemDetails))]
-    public async Task<ActionResult> Logout(
-        [FromRoute] long userId,
-        [FromBody] LogoutRequestBody requestBody,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult> Logout(CancellationToken cancellationToken)
     {
+        if (!TryGetRefreshToken(out var refreshToken, out var errorResult))
+            return errorResult!;
+
         var query = new LogoutCommand
         {
-            UserId = userId,
-            RequestBody = requestBody
+            UserId = User.GetUserId(),
+            RefreshToken = refreshToken!
         };
-
         var response = await _mediator.Send(query, cancellationToken);
 
-        return response.Match(Ok, BadRequest, OtherError);
+        return MatchResult(response,
+            _ =>
+            {
+                ClearAuthCookies();
+                return NoContent();
+            });
     }
 
     [AllowAnonymous]
-    [HttpPost("{userId:long}/token")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [HttpPost("token")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesDefaultResponseType(typeof(ProblemDetails))]
-    public async Task<ActionResult> Refresh(
-        [FromRoute] long userId,
-        [FromBody] RefreshRequestBody requestBody,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult> Refresh(CancellationToken cancellationToken)
     {
+        if (!TryGetRefreshToken(out var refreshToken, out var errorResult))
+            return errorResult!;
+
         var query = new RefreshCommand
         {
-            UserId = userId,
-            RequestBody = requestBody
+            UserId = User.GetUserId(),
+            RefreshToken = refreshToken!
         };
-
         var response = await _mediator.Send(query, cancellationToken);
 
-        // todo: вставить токен в куки
-
-        return response.Match(Ok, BadRequest, OtherError);
+        return MatchResult(response, _ => NoContent());
     }
 }

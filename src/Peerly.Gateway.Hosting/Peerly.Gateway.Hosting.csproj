@@ -4,12 +4,12 @@
     <RootNamespace>Peerly.Gateway.Hosting</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="AutoMapper" />
     <PackageReference Include="AutoMapper.Extensions.EnumMapping" />
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" />
     <PackageReference Include="Grpc.AspNetCore"/>
     <PackageReference Include="Grpc.AspNetCore.Server.Reflection"/>
     <PackageReference Include="IdentityModel" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
   </ItemGroup>
   <ItemGroup>
