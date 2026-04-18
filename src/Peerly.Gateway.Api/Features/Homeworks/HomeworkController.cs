@@ -4,7 +4,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Peerly.Gateway.Api.Features.Homeworks.CreateHomeworkFile;
-using Peerly.Gateway.Api.Features.Homeworks.UpdateHomeworkStatus;
 using Peerly.Gateway.Api.Infrastructure;
 using Peerly.Gateway.Api.Infrastructure.Filters;
 
@@ -19,26 +18,6 @@ public sealed partial class HomeworkController : ApplicationControllerBase
     public HomeworkController(IMediator mediator)
     {
         _mediator = mediator;
-    }
-
-    [HasPermission(ApiPermission.UpdateHomeworkStatus)]
-    [HttpPut("{homeworkId:long}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesDefaultResponseType(typeof(ProblemDetails))]
-    public async Task<ActionResult> UpdateHomeworkStatus(
-        [FromRoute] long homeworkId,
-        [FromBody] UpdateHomeworkStatusRequestBody requestBody,
-        CancellationToken cancellationToken)
-    {
-        var query = new UpdateHomeworkStatusCommand
-        {
-            HomeworkId = homeworkId,
-            TeacherId = User.GetUserId(),
-            RequestBody = requestBody
-        };
-        var response = await _mediator.Send(query, cancellationToken);
-
-        return response.Match(Ok, BadRequest, OtherError);
     }
 
     [HasPermission(ApiPermission.CreateHomeworkFile)]
