@@ -35,5 +35,6 @@ public enum ApiPermission
     GetTeacherCourse = 31,
     GenerateDownloadUrl = 32,
     CreateHomeworkFile = 33,
-    CreateSubmittedHomework = 34
+    CreateSubmittedHomework = 34,
+    GetTeacherGroup = 35
 }

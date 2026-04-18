@@ -1,6 +1,6 @@
 using Peerly.Gateway.Api.Models.Course;
 
-namespace Peerly.Gateway.Api.Features.Student.GetStudentCourse;
+namespace Peerly.Gateway.Api.Features.Students.GetStudentCourse;
 
 public sealed record GetStudentCourseQueryResponse
 {

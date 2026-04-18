@@ -1,7 +1,7 @@
 using AutoMapper;
 using Proto = Peerly.Core.V1;
 
-namespace Peerly.Gateway.Api.Features.Student.ListStudentCourses;
+namespace Peerly.Gateway.Api.Features.Students.ListStudentCourses;
 
 public sealed class ListStudentCoursesProfile : Profile
 {
