@@ -5,6 +5,7 @@ using Peerly.Gateway.Api.Extensions;
 using Peerly.Gateway.Api.Models.Auth;
 using Peerly.Gateway.Api.Models.Common;
 using Peerly.Gateway.Api.Models.Course;
+using Peerly.Gateway.Api.Models.Participants;
 using AuthProto = Peerly.Auth.V1;
 using CoreProto = Peerly.Core.V1;
 
@@ -40,5 +41,8 @@ public sealed class CommonProfile : Profile
         CreateMap<CoreProto.OtherError, OtherError>();
         CreateMap<CoreProto.OtherError.Types.ErrorType, ErrorType>()
             .ConvertUsingEnumMapping(opt => opt.ThrowFor(CoreProto.OtherError.Types.ErrorType.Unspecified));
+
+        CreateMap<CoreProto.TeacherInfo, TeacherInfo>();
+        CreateMap<CoreProto.StudentInfo, StudentInfo>();
     }
 }
