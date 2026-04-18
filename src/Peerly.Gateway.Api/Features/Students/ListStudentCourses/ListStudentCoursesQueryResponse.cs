@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Peerly.Gateway.Api.Models.Course;
 
-namespace Peerly.Gateway.Api.Features.Student.ListStudentCourses;
+namespace Peerly.Gateway.Api.Features.Students.ListStudentCourses;
 
 public sealed record ListStudentCoursesQueryResponse
 {
