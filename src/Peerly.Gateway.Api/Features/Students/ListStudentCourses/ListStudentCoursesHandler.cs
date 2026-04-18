@@ -1,7 +1,7 @@
 using AutoMapper;
 using Peerly.Core.V1;
 
-namespace Peerly.Gateway.Api.Features.Student.ListStudentCourses;
+namespace Peerly.Gateway.Api.Features.Students.ListStudentCourses;
 
 public sealed class ListStudentCoursesHandler : FeatureHandlerAdapter<
     ListStudentCoursesQuery, ListStudentCoursesQueryResponse, V1SearchStudentCoursesRequest, V1SearchStudentCoursesResponse>

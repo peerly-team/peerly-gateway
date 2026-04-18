@@ -3,13 +3,13 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Peerly.Gateway.Api.Features.Student.GetStudentCourse;
-using Peerly.Gateway.Api.Features.Student.ListStudentCourses;
+using Peerly.Gateway.Api.Features.Students.GetStudentCourse;
+using Peerly.Gateway.Api.Features.Students.ListStudentCourses;
 using Peerly.Gateway.Api.Infrastructure;
 using Peerly.Gateway.Api.Infrastructure.Filters;
 using Peerly.Gateway.Api.Models.Course;
 
-namespace Peerly.Gateway.Api.Features.Student;
+namespace Peerly.Gateway.Api.Features.Students;
 
 [Route("api/v1/student")]
 [RpcExceptionFilter]
