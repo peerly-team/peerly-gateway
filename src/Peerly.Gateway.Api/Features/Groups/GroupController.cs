@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Peerly.Gateway.Api.Features.Groups.AddGroupStudent;
 using Peerly.Gateway.Api.Features.Groups.ListGroupParticipants;
 using Peerly.Gateway.Api.Infrastructure;
 using Peerly.Gateway.Api.Infrastructure.Filters;
@@ -33,5 +34,24 @@ public sealed class GroupController : ApplicationControllerBase
             GroupId = groupId
         };
         return await _mediator.Send(query, cancellationToken);
+    }
+
+    [HasPermission(ApiPermission.AddGroupStudent)]
+    [HttpPut("{groupId:long}/students")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult> AddGroupStudent(
+        [FromRoute] long groupId,
+        [FromBody] AddGroupStudentRequestBody requestBody,
+        CancellationToken cancellationToken)
+    {
+        var command = new AddGroupStudentCommand
+        {
+            TeacherId = User.GetUserId(),
+            GroupId = groupId,
+            RequestBody = requestBody
+        };
+        var response = await _mediator.Send(command, cancellationToken);
+        return response.Match(Ok, BadRequest, OtherError);
     }
 }
