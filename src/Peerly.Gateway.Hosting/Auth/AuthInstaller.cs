@@ -60,7 +60,9 @@ internal sealed class AuthInstaller : IInstaller
             .AddPolicy(ApiPermission.PublishHomework.ToString(), p => p.RequireRole(Role.Teacher))
             .AddPolicy(ApiPermission.ConfirmHomework.ToString(), p => p.RequireRole(Role.Teacher))
             .AddPolicy(ApiPermission.CreateHomeworkFile.ToString(), p => p.RequireRole(Role.Teacher))
-            .AddPolicy(ApiPermission.CreateSubmittedHomework.ToString(), p => p.RequireRole(Role.Student));
+            .AddPolicy(ApiPermission.CreateSubmittedHomework.ToString(), p => p.RequireRole(Role.Student))
+            .AddPolicy(ApiPermission.GetStudentHomework.ToString(), p => p.RequireRole(Role.Student))
+            .AddPolicy(ApiPermission.GetTeacherHomework.ToString(), p => p.RequireRole(Role.Teacher));
         services
             .AddAuthentication(
                 options =>
