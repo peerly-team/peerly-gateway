@@ -2,7 +2,7 @@ using AutoMapper;
 using Peerly.Auth.V1;
 using Peerly.Gateway.Api.Models.Common;
 
-namespace Peerly.Gateway.Api.Features.Sessions.Logout;
+namespace Peerly.Gateway.Api.Features.Auth.Logout;
 
 public sealed class LogoutProfile : Profile
 {
