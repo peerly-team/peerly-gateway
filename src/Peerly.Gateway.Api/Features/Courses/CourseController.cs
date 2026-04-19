@@ -81,17 +81,17 @@ public sealed class CourseController : ApplicationControllerBase
     }
 
     [HasPermission(ApiPermission.DeleteCourse)]
-    [HttpDelete]
+    [HttpDelete("{courseId:long}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesDefaultResponseType(typeof(ProblemDetails))]
     public async Task<ActionResult> DeleteCourse(
-        [FromBody] DeleteCourseRequestBody requestBody,
+        [FromRoute] long courseId,
         CancellationToken cancellationToken)
     {
         var command = new DeleteCourseCommand
         {
             TeacherId = User.GetUserId(),
-            RequestBody = requestBody
+            CourseId = courseId
         };
         var response = await _mediator.Send(command, cancellationToken);
 
