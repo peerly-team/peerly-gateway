@@ -7,6 +7,7 @@ using Peerly.Gateway.Api.Features.Groups.AddGroupStudent;
 using Peerly.Gateway.Api.Features.Groups.AddGroupTeacher;
 using Peerly.Gateway.Api.Features.Groups.CreateGroup;
 using Peerly.Gateway.Api.Features.Groups.ListGroupParticipants;
+using Peerly.Gateway.Api.Features.Groups.UpdateGroup;
 using Peerly.Gateway.Api.Infrastructure;
 using Peerly.Gateway.Api.Infrastructure.Filters;
 
@@ -34,6 +35,25 @@ public sealed class GroupController : ApplicationControllerBase
         var command = new CreateGroupCommand
         {
             TeacherId = User.GetUserId(),
+            RequestBody = requestBody
+        };
+        var response = await _mediator.Send(command, cancellationToken);
+        return response.Match(Ok, BadRequest, OtherError);
+    }
+
+    [HasPermission(ApiPermission.UpdateGroup)]
+    [HttpPut("{groupId:long}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult> UpdateGroup(
+        [FromRoute] long groupId,
+        [FromBody] UpdateGroupRequestBody requestBody,
+        CancellationToken cancellationToken)
+    {
+        var command = new UpdateGroupCommand
+        {
+            TeacherId = User.GetUserId(),
+            GroupId = groupId,
             RequestBody = requestBody
         };
         var response = await _mediator.Send(command, cancellationToken);
