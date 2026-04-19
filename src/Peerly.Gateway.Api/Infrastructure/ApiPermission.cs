@@ -27,5 +27,6 @@ public enum ApiPermission
     ListTeacherCourseGroups = 23,
     ListStudentCourseGroups = 24,
     CreateCourseHomework = 25,
-    CreateGroupHomework = 26
+    CreateGroupHomework = 26,
+    UpdateDraftHomework = 27
 }
