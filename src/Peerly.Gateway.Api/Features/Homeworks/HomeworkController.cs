@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Peerly.Gateway.Api.Features.Homeworks.ConfirmHomework;
 using Peerly.Gateway.Api.Features.Homeworks.CreateHomeworkFile;
 using Peerly.Gateway.Api.Features.Homeworks.PostponeHomeworkDeadlines;
 using Peerly.Gateway.Api.Features.Homeworks.PublishHomework;
@@ -90,6 +91,22 @@ public sealed partial class HomeworkController : ApplicationControllerBase
     public async Task<ActionResult> PublishHomework([FromRoute] long homeworkId, CancellationToken cancellationToken)
     {
         var command = new PublishHomeworkCommand
+        {
+            TeacherId = User.GetUserId(),
+            HomeworkId = homeworkId
+        };
+        var response = await _mediator.Send(command, cancellationToken);
+
+        return response.Match(Ok, BadRequest, OtherError);
+    }
+
+    [HasPermission(ApiPermission.ConfirmHomework)]
+    [HttpPut("{homeworkId:long}/confirm")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult> ConfirmHomework([FromRoute] long homeworkId, CancellationToken cancellationToken)
+    {
+        var command = new ConfirmHomeworkCommand
         {
             TeacherId = User.GetUserId(),
             HomeworkId = homeworkId
