@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Peerly.Gateway.Api.Features.Students.GetStudentCourse;
 using Peerly.Gateway.Api.Features.Students.GetStudentGroup;
+using Peerly.Gateway.Api.Features.Students.GetStudentHomework;
 using Peerly.Gateway.Api.Features.Students.ListStudentCourseGroups;
 using Peerly.Gateway.Api.Features.Students.ListStudentCourses;
 using Peerly.Gateway.Api.Infrastructure;
@@ -86,6 +87,22 @@ public sealed class StudentController : ApplicationControllerBase
         {
             StudentId = User.GetUserId(),
             CourseId = courseId
+        };
+        return await _mediator.Send(query, cancellationToken);
+    }
+
+    [HasPermission(ApiPermission.GetStudentHomework)]
+    [HttpGet("homeworks/{homeworkId:long}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult<GetStudentHomeworkQueryResponse>> GetHomework(
+        [FromRoute] long homeworkId,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetStudentHomeworkQuery
+        {
+            StudentId = User.GetUserId(),
+            HomeworkId = homeworkId
         };
         return await _mediator.Send(query, cancellationToken);
     }
