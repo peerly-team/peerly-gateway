@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Peerly.Gateway.Api.Features.Homeworks.CreateHomeworkFile;
 using Peerly.Gateway.Api.Features.Homeworks.PostponeHomeworkDeadlines;
+using Peerly.Gateway.Api.Features.Homeworks.PublishHomework;
 using Peerly.Gateway.Api.Features.Homeworks.UpdateDraftHomework;
 using Peerly.Gateway.Api.Infrastructure;
 using Peerly.Gateway.Api.Infrastructure.Filters;
@@ -76,6 +77,22 @@ public sealed partial class HomeworkController : ApplicationControllerBase
             TeacherId = User.GetUserId(),
             HomeworkId = homeworkId,
             RequestBody = requestBody
+        };
+        var response = await _mediator.Send(command, cancellationToken);
+
+        return response.Match(Ok, BadRequest, OtherError);
+    }
+
+    [HasPermission(ApiPermission.PublishHomework)]
+    [HttpPut("{homeworkId:long}/publish")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult> PublishHomework([FromRoute] long homeworkId, CancellationToken cancellationToken)
+    {
+        var command = new PublishHomeworkCommand
+        {
+            TeacherId = User.GetUserId(),
+            HomeworkId = homeworkId
         };
         var response = await _mediator.Send(command, cancellationToken);
 

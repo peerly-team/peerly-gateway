@@ -29,5 +29,6 @@ public enum ApiPermission
     CreateCourseHomework = 25,
     CreateGroupHomework = 26,
     UpdateDraftHomework = 27,
-    PostponeHomeworkDeadlines = 28
+    PostponeHomeworkDeadlines = 28,
+    PublishHomework = 29
 }
