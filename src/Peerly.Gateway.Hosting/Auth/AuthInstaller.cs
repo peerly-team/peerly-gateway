@@ -45,6 +45,7 @@ internal sealed class AuthInstaller : IInstaller
             // Groups
             .AddPolicy(ApiPermission.CreateGroup.ToString(), p => p.RequireRole(Role.Teacher))
             .AddPolicy(ApiPermission.UpdateGroup.ToString(), p => p.RequireRole(Role.Teacher))
+            .AddPolicy(ApiPermission.DeleteGroup.ToString(), p => p.RequireRole(Role.Teacher))
             .AddPolicy(ApiPermission.AddGroupStudent.ToString(), p => p.RequireRole(Role.Teacher))
             .AddPolicy(ApiPermission.AddGroupTeacher.ToString(), p => p.RequireRole(Role.Teacher))
             .AddPolicy(ApiPermission.GetTeacherGroup.ToString(), p => p.RequireRole(Role.Teacher))
@@ -65,7 +66,6 @@ internal sealed class AuthInstaller : IInstaller
             .AddPolicy(ApiPermission.GetGroup.ToString(), p => p.RequireRole(Role.AllRoles))
             .AddPolicy(ApiPermission.ListCourseGroups.ToString(), p => p.RequireRole(Role.AllRoles))
             .AddPolicy(ApiPermission.AddCourseGroup.ToString(), p => p.RequireRole(Role.EditorRoles))
-            .AddPolicy(ApiPermission.DeleteGroup.ToString(), p => p.RequireRole(Role.EditorRoles))
             .AddPolicy(ApiPermission.AddGroupParticipant.ToString(), p => p.RequireRole(Role.EditorRoles))
             .AddPolicy(ApiPermission.DeleteGroupParticipant.ToString(), p => p.RequireRole(Role.EditorRoles))
             .AddPolicy(ApiPermission.DeleteGroupHomework.ToString(), p => p.RequireRole(Role.EditorRoles))

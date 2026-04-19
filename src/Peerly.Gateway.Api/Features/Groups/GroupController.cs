@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Peerly.Gateway.Api.Features.Groups.AddGroupStudent;
 using Peerly.Gateway.Api.Features.Groups.AddGroupTeacher;
 using Peerly.Gateway.Api.Features.Groups.CreateGroup;
+using Peerly.Gateway.Api.Features.Groups.DeleteGroup;
 using Peerly.Gateway.Api.Features.Groups.ListGroupParticipants;
 using Peerly.Gateway.Api.Features.Groups.UpdateGroup;
 using Peerly.Gateway.Api.Infrastructure;
@@ -55,6 +56,23 @@ public sealed class GroupController : ApplicationControllerBase
             TeacherId = User.GetUserId(),
             GroupId = groupId,
             RequestBody = requestBody
+        };
+        var response = await _mediator.Send(command, cancellationToken);
+        return response.Match(Ok, BadRequest, OtherError);
+    }
+
+    [HasPermission(ApiPermission.DeleteGroup)]
+    [HttpDelete("{groupId:long}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult> DeleteGroup(
+        [FromRoute] long groupId,
+        CancellationToken cancellationToken)
+    {
+        var command = new DeleteGroupCommand
+        {
+            TeacherId = User.GetUserId(),
+            GroupId = groupId
         };
         var response = await _mediator.Send(command, cancellationToken);
         return response.Match(Ok, BadRequest, OtherError);
