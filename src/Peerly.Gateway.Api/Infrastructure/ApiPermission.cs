@@ -39,5 +39,6 @@ public enum ApiPermission
     GetTeacherGroup = 35,
     AddGroupStudent = 36,
     AddGroupTeacher = 37,
-    GetStudentGroup = 38
+    GetStudentGroup = 38,
+    CreateGroup = 39
 }
