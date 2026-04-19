@@ -2,7 +2,7 @@ using AutoMapper;
 using Peerly.Auth.V1;
 using Peerly.Gateway.Api.Models.Common;
 
-namespace Peerly.Gateway.Api.Features.Users.Register;
+namespace Peerly.Gateway.Api.Features.Auth.Register;
 
 public sealed class RegisterProfile : Profile
 {

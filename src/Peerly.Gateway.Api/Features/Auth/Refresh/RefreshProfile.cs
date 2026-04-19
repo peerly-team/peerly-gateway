@@ -2,11 +2,11 @@ using AutoMapper;
 using Peerly.Auth.V1;
 using Peerly.Gateway.Api.Models.Common;
 
-namespace Peerly.Gateway.Api.Features.Sessions.RefreshAccessToken;
+namespace Peerly.Gateway.Api.Features.Auth.Refresh;
 
-public sealed class RefreshAccessTokenProfile : Profile
+public sealed class RefreshProfile : Profile
 {
-    public RefreshAccessTokenProfile()
+    public RefreshProfile()
     {
         CreateMap<RefreshCommand, V1RefreshRequest>();
         CreateMap<V1RefreshResponse, Result<RefreshCommandResponse>>();

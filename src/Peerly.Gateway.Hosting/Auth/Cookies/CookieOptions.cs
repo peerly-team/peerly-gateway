@@ -11,5 +11,5 @@ public sealed class AuthCookieOptions
     public string CsrfName { get; set; } = "csrf";
     public bool Secure { get; set; } = true;
     public SameSiteMode SameSite { get; set; } = SameSiteMode.Lax;
-    public string RefreshPath { get; set; } = "/api/v1/sessions";
+    public string RefreshPath { get; set; } = "/api/v1/auth";
 }

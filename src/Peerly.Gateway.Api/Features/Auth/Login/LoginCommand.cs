@@ -1,7 +1,7 @@
 using MediatR;
 using Peerly.Gateway.Api.Models.Common;
 
-namespace Peerly.Gateway.Api.Features.Sessions.Login;
+namespace Peerly.Gateway.Api.Features.Auth.Login;
 
 public sealed record LoginCommand : IRequest<Result<LoginCommandResponse>>
 {

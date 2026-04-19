@@ -1,7 +1,7 @@
 using Peerly.Gateway.Api.Infrastructure.Abstractions;
 using Peerly.Gateway.Api.Models.Auth;
 
-namespace Peerly.Gateway.Api.Features.Sessions.Login;
+namespace Peerly.Gateway.Api.Features.Auth.Login;
 
 public sealed record LoginCommandResponse : IAuthTokenResponse
 {
