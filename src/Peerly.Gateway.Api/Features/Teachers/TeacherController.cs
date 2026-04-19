@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Peerly.Gateway.Api.Features.Teachers.GetTeacherCourse;
 using Peerly.Gateway.Api.Features.Teachers.GetTeacherGroup;
+using Peerly.Gateway.Api.Features.Teachers.ListTeacherCourseGroups;
 using Peerly.Gateway.Api.Features.Teachers.ListTeacherCourses;
 using Peerly.Gateway.Api.Infrastructure;
 using Peerly.Gateway.Api.Infrastructure.Filters;
@@ -69,6 +70,22 @@ public sealed class TeacherController : ApplicationControllerBase
         {
             TeacherId = User.GetUserId(),
             GroupId = groupId
+        };
+        return await _mediator.Send(query, cancellationToken);
+    }
+
+    [HasPermission(ApiPermission.ListTeacherCourseGroups)]
+    [HttpGet("courses/{courseId:long}/groups")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult<ListTeacherCourseGroupsQueryResponse>> ListCourseGroups(
+        [FromRoute] long courseId,
+        CancellationToken cancellationToken)
+    {
+        var query = new ListTeacherCourseGroupsQuery
+        {
+            TeacherId = User.GetUserId(),
+            CourseId = courseId
         };
         return await _mediator.Send(query, cancellationToken);
     }
