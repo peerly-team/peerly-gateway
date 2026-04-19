@@ -2,7 +2,7 @@ using MediatR;
 using Peerly.Gateway.Api.Models.Auth;
 using Peerly.Gateway.Api.Models.Common;
 
-namespace Peerly.Gateway.Api.Features.Users.Register;
+namespace Peerly.Gateway.Api.Features.Auth.Register;
 
 public sealed record RegisterCommand : IRequest<Result<RegisterCommandResponse>>
 {

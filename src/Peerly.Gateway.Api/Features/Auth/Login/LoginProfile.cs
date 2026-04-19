@@ -2,7 +2,7 @@ using AutoMapper;
 using Peerly.Auth.V1;
 using Peerly.Gateway.Api.Models.Common;
 
-namespace Peerly.Gateway.Api.Features.Sessions.Login;
+namespace Peerly.Gateway.Api.Features.Auth.Login;
 
 public sealed class LoginProfile : Profile
 {
