@@ -7,6 +7,7 @@ using Peerly.Gateway.Api.Models.Common;
 using Peerly.Gateway.Api.Models.Course;
 using Peerly.Gateway.Api.Models.Files;
 using Peerly.Gateway.Api.Models.Group;
+using Peerly.Gateway.Api.Models.Homeworks;
 using Peerly.Gateway.Api.Models.Participants;
 using AuthProto = Peerly.Auth.V1;
 using CoreProto = Peerly.Core.V1;
@@ -33,6 +34,8 @@ public sealed class CommonProfile : Profile
         CreateMap<CoreProto.CourseStatus, CourseStatus>()
             .ConvertUsingEnumMapping(opt => opt.ThrowFor(CoreProto.CourseStatus.Unknown))
             .ReverseMap();
+        CreateMap<CoreProto.HomeworkStatus, HomeworkStatus>()
+            .ConvertUsingEnumMapping(opt => opt.ThrowFor(CoreProto.HomeworkStatus.Unknown));
         CreateMap<PaginationInfo, CoreProto.PaginationInfo>();
         CreateMap<CoreProto.CourseInfo, CourseInfo>();
 
