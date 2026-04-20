@@ -4,6 +4,8 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Peerly.Gateway.Api.Features.Homeworks.DeleteSubmittedHomework;
+using Peerly.Gateway.Api.Features.Homeworks.DeleteSubmittedHomeworkFile;
+using Peerly.Gateway.Api.Features.Homeworks.GetSubmittedHomework;
 using Peerly.Gateway.Api.Features.Homeworks.UpdateSubmittedHomework;
 using Peerly.Gateway.Api.Infrastructure;
 using Peerly.Gateway.Api.Infrastructure.Filters;
@@ -19,6 +21,22 @@ public sealed class SubmissionController : ApplicationControllerBase
     public SubmissionController(IMediator mediator)
     {
         _mediator = mediator;
+    }
+
+    [HasPermission(ApiPermission.GetSubmittedHomework)]
+    [HttpGet("{submissionId:long}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult<GetSubmittedHomeworkQueryResponse>> GetSubmittedHomework(
+        [FromRoute] long submissionId,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetSubmittedHomeworkQuery
+        {
+            SubmittedHomeworkId = submissionId,
+            StudentId = User.GetUserId()
+        };
+        return await _mediator.Send(query, cancellationToken);
     }
 
     [HasPermission(ApiPermission.UpdateSubmittedHomework)]
@@ -52,6 +70,26 @@ public sealed class SubmissionController : ApplicationControllerBase
         var command = new DeleteSubmittedHomeworkCommand
         {
             SubmittedHomeworkId = submissionId,
+            StudentId = User.GetUserId()
+        };
+        var response = await _mediator.Send(command, cancellationToken);
+
+        return response.Match(Ok, BadRequest, OtherError);
+    }
+
+    [HasPermission(ApiPermission.DeleteSubmittedHomeworkFile)]
+    [HttpDelete("{submissionId:long}/files/{fileId:long}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult> DeleteSubmittedHomeworkFile(
+        [FromRoute] long submissionId,
+        [FromRoute] long fileId,
+        CancellationToken cancellationToken)
+    {
+        var command = new DeleteSubmittedHomeworkFileCommand
+        {
+            SubmittedHomeworkId = submissionId,
+            FileId = fileId,
             StudentId = User.GetUserId()
         };
         var response = await _mediator.Send(command, cancellationToken);
