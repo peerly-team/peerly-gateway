@@ -11,7 +11,7 @@ namespace Peerly.Gateway.Api.Features.Homeworks;
 public sealed partial class HomeworkController
 {
     [HasPermission(ApiPermission.CreateSubmittedHomework)]
-    [HttpPost("{homeworkId:long}/submit")]
+    [HttpPost("{homeworkId:long}/submissions")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesDefaultResponseType(typeof(ProblemDetails))]
     public async Task<ActionResult<CreateSubmittedHomeworkCommandResponse>> CreateSubmittedHomework(
@@ -31,7 +31,7 @@ public sealed partial class HomeworkController
     }
 
     [HasPermission(ApiPermission.CreateSubmittedHomework)]
-    [HttpPost("submit/{submittedHomeworkId}/file")]
+    [HttpPost("submissions/{submittedHomeworkId}/file")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesDefaultResponseType(typeof(ProblemDetails))]
     public async Task<ActionResult<CreateSubmittedHomeworkFileCommandResponse>> CreateSubmittedHomeworkFile(
