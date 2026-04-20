@@ -36,5 +36,6 @@ public enum ApiPermission
     GetTeacherHomework = 32,
     ListTeacherCourseHomeworks = 33,
     ListStudentCourseHomeworks = 34,
-    UpdateSubmittedHomework = 35
+    UpdateSubmittedHomework = 35,
+    DeleteSubmittedHomework = 36
 }
