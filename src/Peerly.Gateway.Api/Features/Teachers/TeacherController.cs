@@ -7,6 +7,7 @@ using Peerly.Gateway.Api.Features.Teachers.GetTeacherCourse;
 using Peerly.Gateway.Api.Features.Teachers.GetTeacherGroup;
 using Peerly.Gateway.Api.Features.Teachers.GetTeacherHomework;
 using Peerly.Gateway.Api.Features.Teachers.ListTeacherCourseGroups;
+using Peerly.Gateway.Api.Features.Teachers.ListTeacherCourseHomeworks;
 using Peerly.Gateway.Api.Features.Teachers.ListTeacherCourses;
 using Peerly.Gateway.Api.Infrastructure;
 using Peerly.Gateway.Api.Infrastructure.Filters;
@@ -103,6 +104,22 @@ public sealed class TeacherController : ApplicationControllerBase
         {
             TeacherId = User.GetUserId(),
             HomeworkId = homeworkId
+        };
+        return await _mediator.Send(query, cancellationToken);
+    }
+
+    [HasPermission(ApiPermission.ListTeacherCourseHomeworks)]
+    [HttpGet("courses/{courseId:long}/homeworks")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult<ListTeacherCourseHomeworksQueryResponse>> ListCourseHomeworks(
+        [FromRoute] long courseId,
+        CancellationToken cancellationToken)
+    {
+        var query = new ListTeacherCourseHomeworksQuery
+        {
+            TeacherId = User.GetUserId(),
+            CourseId = courseId
         };
         return await _mediator.Send(query, cancellationToken);
     }
