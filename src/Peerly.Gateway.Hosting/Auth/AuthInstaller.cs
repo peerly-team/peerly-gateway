@@ -24,6 +24,7 @@ internal sealed class AuthInstaller : IInstaller
         services.AddHttpContextAccessor();
         services.AddMemoryCache();
         services.AddScoped<IAuthCookiesManager, AuthCookiesWriter>();
+        services.AddScoped<IExpiredAccessTokenReader, ExpiredAccessTokenReader>();
         services
             .AddAuthorizationBuilder()
             // Authorization
