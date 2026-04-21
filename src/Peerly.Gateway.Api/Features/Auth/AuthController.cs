@@ -10,6 +10,7 @@ using Peerly.Gateway.Api.Features.Auth.Logout;
 using Peerly.Gateway.Api.Features.Auth.Refresh;
 using Peerly.Gateway.Api.Features.Auth.Register;
 using Peerly.Gateway.Api.Infrastructure;
+using Peerly.Gateway.Api.Infrastructure.Abstractions;
 using Peerly.Gateway.Api.Infrastructure.Filters;
 
 namespace Peerly.Gateway.Api.Features.Auth;
@@ -62,15 +63,26 @@ public sealed class AuthController : ApplicationControllerBase
     [AllowAnonymous]
     [HttpPost("refresh")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesDefaultResponseType(typeof(ProblemDetails))]
-    public async Task<ActionResult> Refresh(CancellationToken cancellationToken)
+    public async Task<ActionResult> Refresh(
+        [FromServices] IExpiredAccessTokenReader expiredAccessTokenReader,
+        CancellationToken cancellationToken)
     {
         if (!TryGetRefreshToken(out var refreshToken, out var errorResult))
+        {
             return errorResult!;
+        }
+
+        var userId = await expiredAccessTokenReader.TryGetUserIdAsync(Request, cancellationToken);
+        if (userId is null)
+        {
+            return Unauthorized();
+        }
 
         var query = new RefreshCommand
         {
-            UserId = User.GetUserId(),
+            UserId = userId.Value,
             RefreshToken = refreshToken!
         };
         var response = await _mediator.Send(query, cancellationToken);
