@@ -1,0 +1,20 @@
+**/.git
+**/.github
+**/.gitignore
+
+# Build outputs
+**/bin
+**/obj
+
+# Test projects
+tests/
+
+# IDE and tooling
+**/.idea
+**/.vs
+**/*.user
+**/*.DotSettings.user
+
+# Docker
+Dockerfile
+.dockerignore

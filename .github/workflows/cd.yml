@@ -1,0 +1,181 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: cd-peerly-gateway
+  cancel-in-progress: false
+
+env:
+  IMAGE_NAME: peerly-gateway
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-toolchain
+
+      - name: Generate protobufs
+        run: buf generate
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test --no-build --configuration Release
+
+  build-push:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+        run: |
+          if [ -z "$REGISTRY" ]; then
+            echo "::error::REGISTRY secret is not set"
+            exit 1
+          fi
+          IMAGE="$REGISTRY/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          docker build -t "$IMAGE" .
+
+      - name: Scan image for vulnerabilities
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ secrets.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          severity: CRITICAL,HIGH
+          exit-code: 1
+          ignore-unfixed: true
+          vuln-type: os,library
+          trivyignores: .trivyignore
+
+      - name: Push image
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+          REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+        run: |
+          IMAGE="$REGISTRY/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          echo "$REGISTRY_PASSWORD" | docker login "$REGISTRY" -u "$REGISTRY_USERNAME" --password-stdin
+          docker push "$IMAGE"
+
+  deploy-yc-stage:
+    needs: build-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install YC CLI
+        run: |
+          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -n -i /opt/yc
+          echo "/opt/yc/bin" >> "$GITHUB_PATH"
+
+      - name: Configure YC CLI
+        run: |
+          echo '${{ secrets.DEPLOY_SA_KEY_STAGE }}' > /tmp/sa-key.json
+          yc config set service-account-key /tmp/sa-key.json
+          yc config set folder-id ${{ secrets.DEPLOY_SCOPE_ID_STAGE }}
+
+      - name: Resolve Lockbox current version
+        id: lockbox
+        run: |
+          JSON=$(yc lockbox secret get --id ${{ secrets.SECRETS_STORE_ID_STAGE }} --format json)
+          VER=$(echo "$JSON" | jq -r '.current_version.id // .currentVersion.id // empty')
+          if [ -z "$VER" ]; then
+            echo "::error::Failed to resolve Lockbox current version id"
+            exit 1
+          fi
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve image reference
+        id: image
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+        run: echo "url=$REGISTRY/${{ env.IMAGE_NAME }}:${{ github.sha }}" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy stage container
+        uses: yc-actions/yc-sls-container-deploy@v2
+        with:
+          yc-sa-json-credentials: ${{ secrets.DEPLOY_SA_KEY_STAGE }}
+          container-name: peerly-gateway-stage
+          folder-id: ${{ secrets.DEPLOY_SCOPE_ID_STAGE }}
+          revision-image-url: ${{ steps.image.outputs.url }}
+          revision-service-account-id: ${{ secrets.RUNTIME_SA_ID_STAGE }}
+          revision-env: |
+            ASPNETCORE_ENVIRONMENT=Staging
+            PeerlyAuthGrpcClientOptions__Target=${{ secrets.AUTH_GRPC_TARGET_STAGE }}
+            PeerlyCoreGrpcClientOptions__Target=${{ secrets.CORE_GRPC_TARGET_STAGE }}
+            Swagger__Username=${{ secrets.SWAGGER_USERNAME }}
+          revision-secrets: |
+            Swagger__Password=${{ secrets.SECRETS_STORE_ID_STAGE }}/${{ steps.lockbox.outputs.version }}/swagger_password
+            CloudflareAccess__Secret=${{ secrets.SECRETS_STORE_ID_STAGE }}/${{ steps.lockbox.outputs.version }}/cf_secret_stage
+
+      - name: Allow unauthenticated invoke
+        run: yc serverless container allow-unauthenticated-invoke --name peerly-gateway-stage --folder-id ${{ secrets.DEPLOY_SCOPE_ID_STAGE }}
+
+      - name: Cleanup SA key
+        if: always()
+        run: rm -f /tmp/sa-key.json
+
+  deploy-yc-prod:
+    needs: build-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install YC CLI
+        run: |
+          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -n -i /opt/yc
+          echo "/opt/yc/bin" >> "$GITHUB_PATH"
+
+      - name: Configure YC CLI
+        run: |
+          echo '${{ secrets.DEPLOY_SA_KEY }}' > /tmp/sa-key.json
+          yc config set service-account-key /tmp/sa-key.json
+          yc config set folder-id ${{ secrets.DEPLOY_SCOPE_ID }}
+
+      - name: Resolve Lockbox current version
+        id: lockbox
+        run: |
+          JSON=$(yc lockbox secret get --id ${{ secrets.SECRETS_STORE_ID }} --format json)
+          VER=$(echo "$JSON" | jq -r '.current_version.id // .currentVersion.id // empty')
+          if [ -z "$VER" ]; then
+            echo "::error::Failed to resolve Lockbox current version id"
+            exit 1
+          fi
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve image reference
+        id: image
+        env:
+          REGISTRY: ${{ secrets.REGISTRY }}
+        run: echo "url=$REGISTRY/${{ env.IMAGE_NAME }}:${{ github.sha }}" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy prod container
+        uses: yc-actions/yc-sls-container-deploy@v2
+        with:
+          yc-sa-json-credentials: ${{ secrets.DEPLOY_SA_KEY }}
+          container-name: peerly-gateway
+          folder-id: ${{ secrets.DEPLOY_SCOPE_ID }}
+          revision-image-url: ${{ steps.image.outputs.url }}
+          revision-service-account-id: ${{ secrets.RUNTIME_SA_ID }}
+          revision-env: |
+            ASPNETCORE_ENVIRONMENT=Production
+            PeerlyAuthGrpcClientOptions__Target=${{ secrets.AUTH_GRPC_TARGET }}
+            PeerlyCoreGrpcClientOptions__Target=${{ secrets.CORE_GRPC_TARGET }}
+            Swagger__Username=${{ secrets.SWAGGER_USERNAME }}
+          revision-secrets: |
+            Swagger__Password=${{ secrets.SECRETS_STORE_ID }}/${{ steps.lockbox.outputs.version }}/swagger_password
+            CloudflareAccess__Secret=${{ secrets.SECRETS_STORE_ID }}/${{ steps.lockbox.outputs.version }}/cf_secret_prod
+
+      - name: Allow unauthenticated invoke
+        run: yc serverless container allow-unauthenticated-invoke --name peerly-gateway --folder-id ${{ secrets.DEPLOY_SCOPE_ID }}
+
+      - name: Cleanup SA key
+        if: always()
+        run: rm -f /tmp/sa-key.json
