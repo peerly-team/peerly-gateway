@@ -1,0 +1,33 @@
+name: Setup toolchain
+description: Install .NET and buf from .tool-versions
+
+outputs:
+  dotnet:
+    description: .NET version read from .tool-versions
+    value: ${{ steps.versions.outputs.dotnet }}
+  buf:
+    description: buf version read from .tool-versions
+    value: ${{ steps.versions.outputs.buf }}
+
+runs:
+  using: composite
+  steps:
+    - name: Parse .tool-versions
+      id: versions
+      shell: bash
+      run: |
+        dotnet=$(grep '^dotnet ' .tool-versions | awk '{print $2}')
+        buf=$(grep '^buf ' .tool-versions | awk '{print $2}')
+        echo "dotnet=$dotnet" >> "$GITHUB_OUTPUT"
+        echo "buf=$buf"       >> "$GITHUB_OUTPUT"
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ steps.versions.outputs.dotnet }}
+
+    - name: Setup buf
+      uses: bufbuild/buf-setup-action@v1
+      with:
+        version: ${{ steps.versions.outputs.buf }}
+        github_token: ${{ github.token }}
