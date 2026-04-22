@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Peerly.Gateway.Api.Features.Homeworks.DeleteSubmittedReview;
 using Peerly.Gateway.Api.Features.Homeworks.UpdateSubmittedReview;
 using Peerly.Gateway.Api.Infrastructure;
 using Peerly.Gateway.Api.Infrastructure.Filters;
@@ -34,6 +35,24 @@ public sealed class ReviewController : ApplicationControllerBase
             SubmittedReviewId = reviewId,
             StudentId = User.GetUserId(),
             RequestBody = requestBody
+        };
+        var response = await _mediator.Send(command, cancellationToken);
+
+        return response.Match(Ok, BadRequest, OtherError);
+    }
+
+    [HasPermission(ApiPermission.DeleteSubmittedReview)]
+    [HttpDelete("{reviewId:long}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult> DeleteSubmittedReview(
+        [FromRoute] long reviewId,
+        CancellationToken cancellationToken)
+    {
+        var command = new DeleteSubmittedReviewCommand
+        {
+            SubmittedReviewId = reviewId,
+            StudentId = User.GetUserId()
         };
         var response = await _mediator.Send(command, cancellationToken);
 
