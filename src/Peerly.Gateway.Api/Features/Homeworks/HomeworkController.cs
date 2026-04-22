@@ -7,6 +7,7 @@ using Peerly.Gateway.Api.Features.Homeworks.ConfirmHomework;
 using Peerly.Gateway.Api.Features.Homeworks.CreateHomeworkFile;
 using Peerly.Gateway.Api.Features.Homeworks.CreateSubmittedHomework;
 using Peerly.Gateway.Api.Features.Homeworks.DeleteHomework;
+using Peerly.Gateway.Api.Features.Homeworks.DeleteHomeworkFile;
 using Peerly.Gateway.Api.Features.Homeworks.ListAssignedReviews;
 using Peerly.Gateway.Api.Features.Homeworks.PostponeHomeworkDeadlines;
 using Peerly.Gateway.Api.Features.Homeworks.PublishHomework;
@@ -133,6 +134,26 @@ public sealed class HomeworkController : ApplicationControllerBase
             RequestBody = requestBody
         };
         var response = await _mediator.Send(query, cancellationToken);
+
+        return response.Match(Ok, BadRequest, OtherError);
+    }
+
+    [HasPermission(ApiPermission.DeleteHomeworkFile)]
+    [HttpDelete("{homeworkId:long}/file/{fileId:long}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult> DeleteHomeworkFile(
+        [FromRoute] long homeworkId,
+        [FromRoute] long fileId,
+        CancellationToken cancellationToken)
+    {
+        var command = new DeleteHomeworkFileCommand
+        {
+            HomeworkId = homeworkId,
+            FileId = fileId,
+            TeacherId = User.GetUserId()
+        };
+        var response = await _mediator.Send(command, cancellationToken);
 
         return response.Match(Ok, BadRequest, OtherError);
     }
