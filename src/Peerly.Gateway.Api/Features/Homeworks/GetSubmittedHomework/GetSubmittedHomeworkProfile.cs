@@ -11,6 +11,6 @@ public sealed class GetSubmittedHomeworkProfile : Profile
         CreateMap<GetSubmittedHomeworkQuery, Proto.V1GetSubmittedHomeworkRequest>();
         CreateMap<Proto.V1GetSubmittedHomeworkResponse, GetSubmittedHomeworkQueryResponse>()
             .ForMember(dst => dst.FinalMark, opt => opt.MapFrom(src => src.HasFinalMark ? (int?)src.FinalMark : null));
-        CreateMap<Proto.V1GetSubmittedHomeworkResponse.Types.SubmittedHomeworkInfo, SubmittedHomeworkInfo>();
+        CreateMap<Proto.SubmittedHomeworkInfo, SubmittedHomeworkInfo>();
     }
 }
