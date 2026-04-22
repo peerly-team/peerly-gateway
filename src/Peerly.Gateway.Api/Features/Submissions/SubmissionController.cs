@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Peerly.Gateway.Api.Features.Homeworks.CreateSubmittedReview;
 using Peerly.Gateway.Api.Features.Homeworks.DeleteSubmittedHomework;
 using Peerly.Gateway.Api.Features.Homeworks.DeleteSubmittedHomeworkFile;
 using Peerly.Gateway.Api.Features.Homeworks.GetAssignedReview;
@@ -112,5 +113,25 @@ public sealed class SubmissionController : ApplicationControllerBase
             StudentId = User.GetUserId()
         };
         return await _mediator.Send(query, cancellationToken);
+    }
+
+    [HasPermission(ApiPermission.CreateSubmittedReview)]
+    [HttpPost("{submissionId:long}/reviews")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult<CreateSubmittedReviewCommandResponse>> CreateSubmittedReview(
+        [FromRoute] long submissionId,
+        [FromBody] CreateSubmittedReviewRequestBody requestBody,
+        CancellationToken cancellationToken)
+    {
+        var command = new CreateSubmittedReviewCommand
+        {
+            SubmittedHomeworkId = submissionId,
+            StudentId = User.GetUserId(),
+            RequestBody = requestBody
+        };
+        var response = await _mediator.Send(command, cancellationToken);
+
+        return response.Match(Ok, BadRequest, OtherError);
     }
 }
