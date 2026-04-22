@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Peerly.Gateway.Api.Features.Homeworks.DeleteSubmittedReview;
-using Peerly.Gateway.Api.Features.Homeworks.GetSubmittedReview;
-using Peerly.Gateway.Api.Features.Homeworks.UpdateSubmittedReview;
+using Peerly.Gateway.Api.Features.Reviews.DeleteSubmittedReview;
+using Peerly.Gateway.Api.Features.Reviews.GetSubmittedReview;
+using Peerly.Gateway.Api.Features.Reviews.UpdateSubmittedReview;
 using Peerly.Gateway.Api.Infrastructure;
 using Peerly.Gateway.Api.Infrastructure.Filters;
 

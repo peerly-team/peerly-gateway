@@ -60,18 +60,18 @@ public sealed class StudentController : ApplicationControllerBase
         return await _mediator.Send(query, cancellationToken);
     }
 
-    [HasPermission(ApiPermission.GetStudentGroup)]
-    [HttpGet("groups/{groupId:long}")]
+    [HasPermission(ApiPermission.ListStudentCourseHomeworks)]
+    [HttpGet("courses/{courseId:long}/homeworks")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesDefaultResponseType(typeof(ProblemDetails))]
-    public async Task<ActionResult<GetStudentGroupQueryResponse>> GetGroup(
-        [FromRoute] long groupId,
+    public async Task<ActionResult<ListStudentCourseHomeworksQueryResponse>> ListCourseHomeworks(
+        [FromRoute] long courseId,
         CancellationToken cancellationToken)
     {
-        var query = new GetStudentGroupQuery
+        var query = new ListStudentCourseHomeworksQuery
         {
             StudentId = User.GetUserId(),
-            GroupId = groupId
+            CourseId = courseId
         };
         return await _mediator.Send(query, cancellationToken);
     }
@@ -92,6 +92,22 @@ public sealed class StudentController : ApplicationControllerBase
         return await _mediator.Send(query, cancellationToken);
     }
 
+    [HasPermission(ApiPermission.GetStudentGroup)]
+    [HttpGet("groups/{groupId:long}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult<GetStudentGroupQueryResponse>> GetGroup(
+        [FromRoute] long groupId,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetStudentGroupQuery
+        {
+            StudentId = User.GetUserId(),
+            GroupId = groupId
+        };
+        return await _mediator.Send(query, cancellationToken);
+    }
+
     [HasPermission(ApiPermission.GetStudentHomework)]
     [HttpGet("homeworks/{homeworkId:long}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -104,22 +120,6 @@ public sealed class StudentController : ApplicationControllerBase
         {
             StudentId = User.GetUserId(),
             HomeworkId = homeworkId
-        };
-        return await _mediator.Send(query, cancellationToken);
-    }
-
-    [HasPermission(ApiPermission.ListStudentCourseHomeworks)]
-    [HttpGet("courses/{courseId:long}/homeworks")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesDefaultResponseType(typeof(ProblemDetails))]
-    public async Task<ActionResult<ListStudentCourseHomeworksQueryResponse>> ListCourseHomeworks(
-        [FromRoute] long courseId,
-        CancellationToken cancellationToken)
-    {
-        var query = new ListStudentCourseHomeworksQuery
-        {
-            StudentId = User.GetUserId(),
-            CourseId = courseId
         };
         return await _mediator.Send(query, cancellationToken);
     }
