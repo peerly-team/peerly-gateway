@@ -51,5 +51,6 @@ public sealed class CommonProfile : Profile
         CreateMap<CoreProto.StudentInfo, StudentInfo>();
         CreateMap<CoreProto.GroupInfo, GroupInfo>();
         CreateMap<CoreProto.File, File>();
+        CreateMap<CoreProto.SubmittedReviewInfo, SubmittedReviewInfo>();
     }
 }
