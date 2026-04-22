@@ -11,6 +11,7 @@ internal sealed class FeatureInstaller : IInstaller
 {
     public void InstallServices(IServiceCollection services)
     {
+        // TODO: уйти от AutoMapper (в v12 CVE-2026-32933, начиная с v15 — коммерческий). Кандидат на замену — Mapperly.
         services.AddAutoMapper(
             config =>
             {

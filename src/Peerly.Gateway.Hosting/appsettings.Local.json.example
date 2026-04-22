@@ -1,0 +1,18 @@
+{
+  "PeerlyCoreGrpcClientOptions": {
+    "Target": "https://127.0.0.1:5001",
+    "UseClientSideBalancing": false
+  },
+  "PeerlyAuthGrpcClientOptions": {
+    "Target": "https://127.0.0.1:5002",
+    "UseClientSideBalancing": false
+  },
+  "AuthHandlerOptions": {
+    "ValidIssuer": "peerly-auth",
+    "ValidAudience": "peerly-gateway",
+    "ValidAlgorithms": [ "RS256" ]
+  },
+  "Cors": {
+    "AllowedOrigins": [ "http://localhost:5173" ]
+  }
+}
