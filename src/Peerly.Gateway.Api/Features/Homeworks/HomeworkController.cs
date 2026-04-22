@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Peerly.Gateway.Api.Features.Homeworks.ConfirmHomework;
 using Peerly.Gateway.Api.Features.Homeworks.CreateHomeworkFile;
 using Peerly.Gateway.Api.Features.Homeworks.CreateSubmittedHomework;
+using Peerly.Gateway.Api.Features.Homeworks.DeleteHomework;
 using Peerly.Gateway.Api.Features.Homeworks.ListAssignedReviews;
 using Peerly.Gateway.Api.Features.Homeworks.PostponeHomeworkDeadlines;
 using Peerly.Gateway.Api.Features.Homeworks.PublishHomework;
@@ -89,6 +90,24 @@ public sealed class HomeworkController : ApplicationControllerBase
     public async Task<ActionResult> ConfirmHomework([FromRoute] long homeworkId, CancellationToken cancellationToken)
     {
         var command = new ConfirmHomeworkCommand
+        {
+            TeacherId = User.GetUserId(),
+            HomeworkId = homeworkId
+        };
+        var response = await _mediator.Send(command, cancellationToken);
+
+        return response.Match(Ok, BadRequest, OtherError);
+    }
+
+    [HasPermission(ApiPermission.DeleteHomework)]
+    [HttpDelete("{homeworkId:long}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult> DeleteHomework(
+        [FromRoute] long homeworkId,
+        CancellationToken cancellationToken)
+    {
+        var command = new DeleteHomeworkCommand
         {
             TeacherId = User.GetUserId(),
             HomeworkId = homeworkId
