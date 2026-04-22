@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Peerly.Gateway.Api.Features.Homeworks.ConfirmHomework;
 using Peerly.Gateway.Api.Features.Homeworks.CreateHomeworkFile;
+using Peerly.Gateway.Api.Features.Homeworks.CreateSubmittedHomework;
+using Peerly.Gateway.Api.Features.Homeworks.ListAssignedReviews;
 using Peerly.Gateway.Api.Features.Homeworks.PostponeHomeworkDeadlines;
 using Peerly.Gateway.Api.Features.Homeworks.PublishHomework;
 using Peerly.Gateway.Api.Features.Homeworks.UpdateDraftHomework;
@@ -15,33 +17,13 @@ namespace Peerly.Gateway.Api.Features.Homeworks;
 
 [Route("api/v1/homeworks")]
 [RpcExceptionFilter]
-public sealed partial class HomeworkController : ApplicationControllerBase
+public sealed class HomeworkController : ApplicationControllerBase
 {
     private readonly IMediator _mediator;
 
     public HomeworkController(IMediator mediator)
     {
         _mediator = mediator;
-    }
-
-    [HasPermission(ApiPermission.CreateHomeworkFile)]
-    [HttpPost("{homeworkId:long}/file")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesDefaultResponseType(typeof(ProblemDetails))]
-    public async Task<ActionResult<CreateHomeworkFileCommandResponse>> CreateHomeworkFile(
-        [FromRoute] long homeworkId,
-        [FromBody] CreateHomeworkFileRequestBody requestBody,
-        CancellationToken cancellationToken)
-    {
-        var query = new CreateHomeworkFileCommand
-        {
-            HomeworkId = homeworkId,
-            TeacherId = User.GetUserId(),
-            RequestBody = requestBody
-        };
-        var response = await _mediator.Send(query, cancellationToken);
-
-        return response.Match(Ok, BadRequest, OtherError);
     }
 
     [HasPermission(ApiPermission.UpdateDraftHomework)]
@@ -114,5 +96,61 @@ public sealed partial class HomeworkController : ApplicationControllerBase
         var response = await _mediator.Send(command, cancellationToken);
 
         return response.Match(Ok, BadRequest, OtherError);
+    }
+
+    [HasPermission(ApiPermission.CreateHomeworkFile)]
+    [HttpPost("{homeworkId:long}/file")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult<CreateHomeworkFileCommandResponse>> CreateHomeworkFile(
+        [FromRoute] long homeworkId,
+        [FromBody] CreateHomeworkFileRequestBody requestBody,
+        CancellationToken cancellationToken)
+    {
+        var query = new CreateHomeworkFileCommand
+        {
+            HomeworkId = homeworkId,
+            TeacherId = User.GetUserId(),
+            RequestBody = requestBody
+        };
+        var response = await _mediator.Send(query, cancellationToken);
+
+        return response.Match(Ok, BadRequest, OtherError);
+    }
+
+    [HasPermission(ApiPermission.CreateSubmittedHomework)]
+    [HttpPost("{homeworkId:long}/submissions")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult<CreateSubmittedHomeworkCommandResponse>> CreateSubmittedHomework(
+        [FromRoute] long homeworkId,
+        [FromBody] CreateSubmittedHomeworkRequestBody requestBody,
+        CancellationToken cancellationToken)
+    {
+        var query = new CreateSubmittedHomeworkCommand
+        {
+            HomeworkId = homeworkId,
+            StudentId = User.GetUserId(),
+            RequestBody = requestBody
+        };
+        var response = await _mediator.Send(query, cancellationToken);
+
+        return response.Match(Ok, BadRequest, OtherError);
+    }
+
+    [HasPermission(ApiPermission.ListAssignedReviews)]
+    [HttpGet("{homeworkId:long}/assigned-reviews")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult<ListAssignedReviewsQueryResponse>> ListAssignedReviews(
+        [FromRoute] long homeworkId,
+        CancellationToken cancellationToken)
+    {
+        var query = new ListAssignedReviewsQuery
+        {
+            HomeworkId = homeworkId,
+            StudentId = User.GetUserId()
+        };
+        return await _mediator.Send(query, cancellationToken);
     }
 }

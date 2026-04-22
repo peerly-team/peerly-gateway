@@ -1,0 +1,10 @@
+using MediatR;
+using Peerly.Gateway.Api.Models.Common;
+
+namespace Peerly.Gateway.Api.Features.Submissions.DeleteSubmittedHomework;
+
+public sealed record DeleteSubmittedHomeworkCommand : IRequest<Result<EmptyResponse>>
+{
+    public required long SubmittedHomeworkId { get; init; }
+    public required long StudentId { get; init; }
+}
