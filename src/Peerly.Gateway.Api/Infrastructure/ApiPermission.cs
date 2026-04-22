@@ -43,5 +43,6 @@ public enum ApiPermission
     ListAssignedReviews = 39,
     GetAssignedReview = 40,
     CreateSubmittedReview = 41,
-    UpdateSubmittedReview = 42
+    UpdateSubmittedReview = 42,
+    DeleteSubmittedReview = 43
 }
