@@ -4,7 +4,9 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Peerly.Gateway.Api.Features.Courses.CreateCourse;
+using Peerly.Gateway.Api.Features.Courses.CreateCourseHomework;
 using Peerly.Gateway.Api.Features.Courses.DeleteCourse;
+using Peerly.Gateway.Api.Features.Courses.ListCourseParticipants;
 using Peerly.Gateway.Api.Features.Courses.ListCourses;
 using Peerly.Gateway.Api.Features.Courses.UpdateCourse;
 using Peerly.Gateway.Api.Infrastructure;
@@ -15,7 +17,7 @@ namespace Peerly.Gateway.Api.Features.Courses;
 
 [Route("api/v1/courses")]
 [RpcExceptionFilter]
-public sealed partial class CourseController : ApplicationControllerBase
+public sealed class CourseController : ApplicationControllerBase
 {
     private readonly IMediator _mediator;
 
@@ -80,16 +82,51 @@ public sealed partial class CourseController : ApplicationControllerBase
     }
 
     [HasPermission(ApiPermission.DeleteCourse)]
-    [HttpDelete]
+    [HttpDelete("{courseId:long}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesDefaultResponseType(typeof(ProblemDetails))]
     public async Task<ActionResult> DeleteCourse(
-        [FromBody] DeleteCourseRequestBody requestBody,
+        [FromRoute] long courseId,
         CancellationToken cancellationToken)
     {
         var command = new DeleteCourseCommand
         {
             TeacherId = User.GetUserId(),
+            CourseId = courseId
+        };
+        var response = await _mediator.Send(command, cancellationToken);
+
+        return response.Match(Ok, BadRequest, OtherError);
+    }
+
+    [HasPermission(ApiPermission.ListCourseParticipants)]
+    [HttpGet("{courseId:long}/participants")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult<ListCourseParticipantsQueryResponse>> ListCourseParticipants(
+        [FromRoute] long courseId,
+        CancellationToken cancellationToken)
+    {
+        var query = new ListCourseParticipantsQuery
+        {
+            CourseId = courseId
+        };
+        return await _mediator.Send(query, cancellationToken);
+    }
+
+    [HasPermission(ApiPermission.CreateCourseHomework)]
+    [HttpPost("{courseId:long}/homeworks")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult<CreateCourseHomeworkCommandResponse>> CreateCourseHomework(
+        [FromRoute] long courseId,
+        [FromBody] CreateCourseHomeworkRequestBody requestBody,
+        CancellationToken cancellationToken)
+    {
+        var command = new CreateCourseHomeworkCommand
+        {
+            TeacherId = User.GetUserId(),
+            CourseId = courseId,
             RequestBody = requestBody
         };
         var response = await _mediator.Send(command, cancellationToken);

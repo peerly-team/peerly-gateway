@@ -3,7 +3,7 @@ using Peerly.Gateway.Api.Models.Common;
 
 namespace Peerly.Gateway.Api.Features.Courses.CreateCourse;
 
-public sealed record CreateCourseCommand : IRequest<Result<EmptyResponse>>
+public sealed record CreateCourseCommand : IRequest<Result<CreateCourseCommandResponse>>
 {
     public required long TeacherId { get; init; }
     public required CreateCourseRequestBody RequestBody { get; init; }
