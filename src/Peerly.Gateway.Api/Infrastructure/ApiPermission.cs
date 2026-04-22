@@ -45,5 +45,6 @@ public enum ApiPermission
     CreateSubmittedReview = 41,
     UpdateSubmittedReview = 42,
     DeleteSubmittedReview = 43,
-    GetSubmittedReview = 44
+    GetSubmittedReview = 44,
+    ListSubmittedHomeworkOverview = 45
 }
