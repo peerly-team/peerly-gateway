@@ -79,21 +79,6 @@ public sealed class GroupController : ApplicationControllerBase
         return response.Match(Ok, BadRequest, OtherError);
     }
 
-    [HasPermission(ApiPermission.ListGroupParticipants)]
-    [HttpGet("{groupId:long}/participants")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesDefaultResponseType(typeof(ProblemDetails))]
-    public async Task<ActionResult<ListGroupParticipantsQueryResponse>> ListGroupParticipants(
-        [FromRoute] long groupId,
-        CancellationToken cancellationToken)
-    {
-        var query = new ListGroupParticipantsQuery
-        {
-            GroupId = groupId
-        };
-        return await _mediator.Send(query, cancellationToken);
-    }
-
     [HasPermission(ApiPermission.AddGroupStudent)]
     [HttpPut("{groupId:long}/students")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -130,6 +115,21 @@ public sealed class GroupController : ApplicationControllerBase
         };
         var response = await _mediator.Send(command, cancellationToken);
         return response.Match(Ok, BadRequest, OtherError);
+    }
+
+    [HasPermission(ApiPermission.ListGroupParticipants)]
+    [HttpGet("{groupId:long}/participants")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult<ListGroupParticipantsQueryResponse>> ListGroupParticipants(
+        [FromRoute] long groupId,
+        CancellationToken cancellationToken)
+    {
+        var query = new ListGroupParticipantsQuery
+        {
+            GroupId = groupId
+        };
+        return await _mediator.Send(query, cancellationToken);
     }
 
     [HasPermission(ApiPermission.CreateGroupHomework)]

@@ -3,12 +3,14 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Peerly.Gateway.Api.Features.Homeworks.CreateSubmittedReview;
-using Peerly.Gateway.Api.Features.Homeworks.DeleteSubmittedHomework;
-using Peerly.Gateway.Api.Features.Homeworks.DeleteSubmittedHomeworkFile;
-using Peerly.Gateway.Api.Features.Homeworks.GetAssignedReview;
-using Peerly.Gateway.Api.Features.Homeworks.GetSubmittedHomework;
-using Peerly.Gateway.Api.Features.Homeworks.UpdateSubmittedHomework;
+using Peerly.Gateway.Api.Features.Submissions.CorrectSubmittedHomeworkMark;
+using Peerly.Gateway.Api.Features.Submissions.CreateSubmittedHomeworkFile;
+using Peerly.Gateway.Api.Features.Submissions.CreateSubmittedReview;
+using Peerly.Gateway.Api.Features.Submissions.DeleteSubmittedHomework;
+using Peerly.Gateway.Api.Features.Submissions.DeleteSubmittedHomeworkFile;
+using Peerly.Gateway.Api.Features.Submissions.GetAssignedReview;
+using Peerly.Gateway.Api.Features.Submissions.GetSubmittedHomework;
+using Peerly.Gateway.Api.Features.Submissions.UpdateSubmittedHomework;
 using Peerly.Gateway.Api.Infrastructure;
 using Peerly.Gateway.Api.Infrastructure.Filters;
 
@@ -79,6 +81,26 @@ public sealed class SubmissionController : ApplicationControllerBase
         return response.Match(Ok, BadRequest, OtherError);
     }
 
+    [HasPermission(ApiPermission.CreateSubmittedHomework)]
+    [HttpPost("{submissionId:long}/file")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult<CreateSubmittedHomeworkFileCommandResponse>> CreateSubmittedHomeworkFile(
+        [FromRoute] long submissionId,
+        [FromBody] CreateSubmittedHomeworkFileRequestBody requestBody,
+        CancellationToken cancellationToken)
+    {
+        var command = new CreateSubmittedHomeworkFileCommand
+        {
+            SubmittedHomeworkId = submissionId,
+            StudentId = User.GetUserId(),
+            RequestBody = requestBody
+        };
+        var response = await _mediator.Send(command, cancellationToken);
+
+        return response.Match(Ok, BadRequest, OtherError);
+    }
+
     [HasPermission(ApiPermission.DeleteSubmittedHomeworkFile)]
     [HttpDelete("{submissionId:long}/files/{fileId:long}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -100,7 +122,7 @@ public sealed class SubmissionController : ApplicationControllerBase
     }
 
     [HasPermission(ApiPermission.GetAssignedReview)]
-    [HttpGet("{submissionId:long}/for-review")]
+    [HttpGet("{submissionId:long}/reviews")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesDefaultResponseType(typeof(ProblemDetails))]
     public async Task<ActionResult<GetAssignedReviewQueryResponse>> GetAssignedReview(
@@ -128,6 +150,26 @@ public sealed class SubmissionController : ApplicationControllerBase
         {
             SubmittedHomeworkId = submissionId,
             StudentId = User.GetUserId(),
+            RequestBody = requestBody
+        };
+        var response = await _mediator.Send(command, cancellationToken);
+
+        return response.Match(Ok, BadRequest, OtherError);
+    }
+
+    [HasPermission(ApiPermission.CorrectSubmittedHomeworkMark)]
+    [HttpPut("{submissionId:long}/mark")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult> CorrectSubmittedHomeworkMark(
+        [FromRoute] long submissionId,
+        [FromBody] CorrectSubmittedHomeworkMarkRequestBody requestBody,
+        CancellationToken cancellationToken)
+    {
+        var command = new CorrectSubmittedHomeworkMarkCommand
+        {
+            SubmittedHomeworkId = submissionId,
+            TeacherId = User.GetUserId(),
             RequestBody = requestBody
         };
         var response = await _mediator.Send(command, cancellationToken);
