@@ -1,4 +1,8 @@
+using System;
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
 using Peerly.Gateway.Hosting.Middlewares;
 
@@ -10,11 +14,23 @@ public static class ProgramConfigureExtensions
     {
         app.UseRouting();
 
-        // todo: настроить безопасную доступ (.SetIsOriginAllowed(_ => true) - небезопасно)
-        // можно сделать чтение доступных адресов из appsettings.json
+        app.UseMiddleware<CloudflareAccessMiddleware>();
+
+        var config = app.ApplicationServices.GetRequiredService<IConfiguration>();
+        var allowedOrigins = config.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+        var allowedOriginSuffixes = config.GetSection("Cors:AllowedOriginSuffixes").Get<string[]>() ?? [];
+
         app.UseCors(
             policyBuilder => policyBuilder
-                .SetIsOriginAllowed(_ => true)
+                .SetIsOriginAllowed(origin =>
+                {
+                    if (allowedOrigins.Contains(origin, StringComparer.OrdinalIgnoreCase))
+                        return true;
+
+                    var host = new Uri(origin).Host;
+                    return allowedOriginSuffixes.Any(suffix =>
+                        host.EndsWith(suffix, StringComparison.OrdinalIgnoreCase));
+                })
                 .AllowAnyHeader()
                 .AllowCredentials()
                 .WithMethods("GET", "POST", "PUT", "DELETE")
@@ -27,6 +43,8 @@ public static class ProgramConfigureExtensions
         app.UseAuthorization();
 
         app.UseEndpoints(endpoints => endpoints.MapControllers());
+
+        app.UseMiddleware<Peerly.Gateway.Hosting.Middlewares.SwaggerBasicAuthMiddleware>();
 
         app.UseSwagger();
         app.UseSwaggerUI(c =>
