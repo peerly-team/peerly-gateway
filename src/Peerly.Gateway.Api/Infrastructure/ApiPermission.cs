@@ -41,5 +41,6 @@ public enum ApiPermission
     DeleteSubmittedHomeworkFile = 37,
     GetSubmittedHomework = 38,
     ListAssignedReviews = 39,
-    GetAssignedReview = 40
+    GetAssignedReview = 40,
+    CreateSubmittedReview = 41
 }
