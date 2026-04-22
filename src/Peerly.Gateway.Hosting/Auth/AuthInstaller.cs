@@ -71,7 +71,8 @@ internal sealed class AuthInstaller : IInstaller
             .AddPolicy(ApiPermission.DeleteSubmittedHomeworkFile.ToString(), p => p.RequireRole(Role.Student))
             .AddPolicy(ApiPermission.GetSubmittedHomework.ToString(), p => p.RequireRole(Role.Student))
             .AddPolicy(ApiPermission.ListAssignedReviews.ToString(), p => p.RequireRole(Role.Student))
-            .AddPolicy(ApiPermission.GetAssignedReview.ToString(), p => p.RequireRole(Role.Student));
+            .AddPolicy(ApiPermission.GetAssignedReview.ToString(), p => p.RequireRole(Role.Student))
+            .AddPolicy(ApiPermission.CreateSubmittedReview.ToString(), p => p.RequireRole(Role.Student));
 
         services
             .AddAuthentication(
