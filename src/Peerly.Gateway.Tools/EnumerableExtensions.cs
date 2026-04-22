@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Peerly.Gateway.Tools;
+﻿namespace Peerly.Gateway.Tools;
 
 public static class EnumerableExtensions
 {

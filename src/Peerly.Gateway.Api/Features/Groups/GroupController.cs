@@ -1,153 +1,69 @@
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Peerly.Gateway.Api.Features.Groups.AddGroupStudent;
-using Peerly.Gateway.Api.Features.Groups.AddGroupTeacher;
-using Peerly.Gateway.Api.Features.Groups.CreateGroup;
-using Peerly.Gateway.Api.Features.Groups.CreateGroupHomework;
 using Peerly.Gateway.Api.Features.Groups.DeleteGroup;
-using Peerly.Gateway.Api.Features.Groups.ListGroupParticipants;
-using Peerly.Gateway.Api.Features.Groups.UpdateGroup;
+using Peerly.Gateway.Api.Features.Groups.GetGroup;
 using Peerly.Gateway.Api.Infrastructure;
 using Peerly.Gateway.Api.Infrastructure.Filters;
+using Peerly.Gateway.Api.Models.Course;
 
 namespace Peerly.Gateway.Api.Features.Groups;
 
 [Route("api/v1/groups")]
 [RpcExceptionFilter]
-public sealed class GroupController : ApplicationControllerBase
+public sealed partial class GroupController : ApplicationControllerBase
 {
-    private readonly IMediator _mediator;
-
-    public GroupController(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
-
-    [HasPermission(ApiPermission.CreateGroup)]
-    [HttpPost]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesDefaultResponseType(typeof(ProblemDetails))]
-    public async Task<ActionResult> CreateGroup(
-        [FromBody] CreateGroupRequestBody requestBody,
-        CancellationToken cancellationToken)
-    {
-        var command = new CreateGroupCommand
-        {
-            TeacherId = User.GetUserId(),
-            RequestBody = requestBody
-        };
-        var response = await _mediator.Send(command, cancellationToken);
-        return response.Match(Ok, BadRequest, OtherError);
-    }
-
-    [HasPermission(ApiPermission.UpdateGroup)]
-    [HttpPut("{groupId:long}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesDefaultResponseType(typeof(ProblemDetails))]
-    public async Task<ActionResult> UpdateGroup(
-        [FromRoute] long groupId,
-        [FromBody] UpdateGroupRequestBody requestBody,
-        CancellationToken cancellationToken)
-    {
-        var command = new UpdateGroupCommand
-        {
-            TeacherId = User.GetUserId(),
-            GroupId = groupId,
-            RequestBody = requestBody
-        };
-        var response = await _mediator.Send(command, cancellationToken);
-        return response.Match(Ok, BadRequest, OtherError);
-    }
-
+    // NOTE: удаляет участника из курса
     [HasPermission(ApiPermission.DeleteGroup)]
-    [HttpDelete("{groupId:long}")]
+    [HttpDelete]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesDefaultResponseType(typeof(ProblemDetails))]
     public async Task<ActionResult> DeleteGroup(
-        [FromRoute] long groupId,
+        [FromBody] DeleteGroupRequestBody requestBody,
         CancellationToken cancellationToken)
     {
-        var command = new DeleteGroupCommand
+        var query = new DeleteGroupCommand
         {
-            TeacherId = User.GetUserId(),
-            GroupId = groupId
-        };
-        var response = await _mediator.Send(command, cancellationToken);
-        return response.Match(Ok, BadRequest, OtherError);
-    }
-
-    [HasPermission(ApiPermission.AddGroupStudent)]
-    [HttpPut("{groupId:long}/students")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesDefaultResponseType(typeof(ProblemDetails))]
-    public async Task<ActionResult> AddGroupStudent(
-        [FromRoute] long groupId,
-        [FromBody] AddGroupStudentRequestBody requestBody,
-        CancellationToken cancellationToken)
-    {
-        var command = new AddGroupStudentCommand
-        {
-            TeacherId = User.GetUserId(),
-            GroupId = groupId,
+            UserId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!),
             RequestBody = requestBody
         };
-        var response = await _mediator.Send(command, cancellationToken);
-        return response.Match(Ok, BadRequest, OtherError);
+
+        return await Task.FromResult(NoContent());
+
+        // todo: прикрутить ручку к peerly-core
+        //return await _mediator.Send(query, cancellationToken);
     }
 
-    [HasPermission(ApiPermission.AddGroupTeacher)]
-    [HttpPut("{groupId:long}/teachers")]
+    // NOTE: отдает информацию о группе
+    [HasPermission(ApiPermission.GetGroup)]
+    [HttpGet("{groupId:long}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesDefaultResponseType(typeof(ProblemDetails))]
-    public async Task<ActionResult> AddGroupTeacher(
-        [FromRoute] long groupId,
-        [FromBody] AddGroupTeacherRequestBody requestBody,
-        CancellationToken cancellationToken)
-    {
-        var command = new AddGroupTeacherCommand
-        {
-            ActorTeacherId = User.GetUserId(),
-            GroupId = groupId,
-            RequestBody = requestBody
-        };
-        var response = await _mediator.Send(command, cancellationToken);
-        return response.Match(Ok, BadRequest, OtherError);
-    }
-
-    [HasPermission(ApiPermission.ListGroupParticipants)]
-    [HttpGet("{groupId:long}/participants")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesDefaultResponseType(typeof(ProblemDetails))]
-    public async Task<ActionResult<ListGroupParticipantsQueryResponse>> ListGroupParticipants(
+    public async Task<ActionResult<GetGroupQueryResponse>> GetGroup(
         [FromRoute] long groupId,
         CancellationToken cancellationToken)
     {
-        var query = new ListGroupParticipantsQuery
+        var query = new GetGroupQuery
         {
             GroupId = groupId
         };
-        return await _mediator.Send(query, cancellationToken);
-    }
 
-    [HasPermission(ApiPermission.CreateGroupHomework)]
-    [HttpPost("{groupId:long}/homeworks")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesDefaultResponseType(typeof(ProblemDetails))]
-    public async Task<ActionResult<CreateGroupHomeworkCommandResponse>> CreateGroupHomework(
-        [FromRoute] long groupId,
-        [FromBody] CreateGroupHomeworkRequestBody requestBody,
-        CancellationToken cancellationToken)
-    {
-        var command = new CreateGroupHomeworkCommand
-        {
-            TeacherId = User.GetUserId(),
-            GroupId = groupId,
-            RequestBody = requestBody
-        };
-        var response = await _mediator.Send(command, cancellationToken);
-        return response.Match(Ok, BadRequest, OtherError);
+        return await Task.FromResult(
+            new GetGroupQueryResponse
+            {
+                Group = new Group
+                {
+                    Id = 1,
+                    CourseId = 1,
+                    Name = "test",
+                    StudentCount = 1,
+                    HomeworkCount = 0
+                }
+            });
+
+        // todo: прикрутить ручку к peerly-core
+        //return await _mediator.Send(query, cancellationToken);
     }
 }

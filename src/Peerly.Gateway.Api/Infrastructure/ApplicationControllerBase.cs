@@ -1,12 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using Peerly.Gateway.Api.Extensions;
-using Peerly.Gateway.Api.Infrastructure.Abstractions;
 using Peerly.Gateway.Api.Infrastructure.Filters;
 using Peerly.Gateway.Api.Models.Common;
 
@@ -26,19 +23,11 @@ public abstract class ApplicationControllerBase : ControllerBase
         return result.Match(_ => NoContent(), BadRequest, OtherError);
     }
 
-    protected ActionResult MatchResult<T>(Result<T> result, Func<T, ActionResult> success)
+    protected ActionResult<T> MatchResult<T>(Result<T> result)
     {
         ArgumentNullException.ThrowIfNull(result, nameof(result));
-        ArgumentNullException.ThrowIfNull(success, nameof(success));
 
-        return result.Match(
-            successResponse =>
-            {
-                WriteAuthCookies(successResponse);
-                return success(successResponse);
-            },
-            BadRequest,
-            OtherError);
+        return result.Match(success => Ok(success), BadRequest, OtherError);
     }
 
     protected ActionResult BadRequest(ValidationError validationError)
@@ -78,54 +67,5 @@ public abstract class ApplicationControllerBase : ControllerBase
         };
 
         return Problem(detail: otherError.Message, statusCode: statusCode);
-    }
-
-    protected bool TryGetRefreshToken(out string? refreshToken, out ActionResult? errorResult)
-    {
-        var authCookiesManager = HttpContext.RequestServices.GetRequiredService<IAuthCookiesManager>();
-        if (authCookiesManager.TryGetRefreshToken(Request, out refreshToken))
-        {
-            errorResult = null;
-            return true;
-        }
-
-        errorResult = CreateRefreshTokenRequiredResult();
-        return false;
-    }
-
-    protected void ClearAuthCookies()
-    {
-        var authCookiesManager = HttpContext.RequestServices.GetRequiredService<IAuthCookiesManager>();
-        authCookiesManager.ClearTokens(Response);
-    }
-
-    private void WriteAuthCookies<T>(T successResponse)
-    {
-        if (successResponse is not IAuthTokenResponse authTokenResponse)
-            return;
-
-        var authCookiesManager = HttpContext.RequestServices.GetRequiredService<IAuthCookiesManager>();
-        authCookiesManager.WriteTokens(Response, authTokenResponse.Token);
-    }
-
-    private ActionResult CreateRefreshTokenRequiredResult()
-    {
-        const string ErrorMessage = "Refresh token cookie is required.";
-        var errors = new Dictionary<string, string[]>
-        {
-            ["refreshToken"] = [ErrorMessage]
-        };
-
-        var validationProblemDetails = new ValidationProblemDetails(errors)
-        {
-            Status = StatusCodes.Status400BadRequest,
-            Detail = ErrorMessage,
-            Extensions =
-            {
-                ["source"] = ValidationSource.FormatValidation
-            }
-        };
-
-        return ValidationProblem(validationProblemDetails);
     }
 }

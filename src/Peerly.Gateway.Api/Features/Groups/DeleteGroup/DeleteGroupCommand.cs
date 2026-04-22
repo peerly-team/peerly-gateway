@@ -1,10 +1,12 @@
-using MediatR;
-using Peerly.Gateway.Api.Models.Common;
-
 namespace Peerly.Gateway.Api.Features.Groups.DeleteGroup;
 
-public sealed record DeleteGroupCommand : IRequest<Result<EmptyResponse>>
+public sealed record DeleteGroupCommand
 {
-    public required long TeacherId { get; init; }
+    public required long UserId { get; init; }
+    public required DeleteGroupRequestBody RequestBody { get; init; }
+}
+
+public sealed record DeleteGroupRequestBody
+{
     public required long GroupId { get; init; }
 }

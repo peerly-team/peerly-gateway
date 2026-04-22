@@ -3,7 +3,9 @@
     <!-- Third-party packages -->
     <PackageReference Include="AutoMapper"/>
     <PackageReference Include="AutoMapper.Extensions.EnumMapping"/>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" />
     <PackageReference Include="MediatR"/>
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
     <PackageReference Include="System.Linq.Async"/>
   </ItemGroup>
   <ItemGroup>

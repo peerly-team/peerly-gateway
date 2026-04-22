@@ -1,10 +1,9 @@
 using System.Collections.Generic;
-using Peerly.Gateway.Api.Models.Participants;
+using Peerly.Gateway.Api.Models.Users;
 
 namespace Peerly.Gateway.Api.Features.Groups.ListGroupParticipants;
 
 public sealed record ListGroupParticipantsQueryResponse
 {
-    public required IReadOnlyCollection<TeacherInfo> Teachers { get; init; }
-    public required IReadOnlyCollection<StudentInfo> Students { get; init; }
+    public required IReadOnlyCollection<User> Participants { get; init; }
 }
