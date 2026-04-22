@@ -4,6 +4,12 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Peerly.Gateway.Api.Features.Teachers.GetTeacherCourse;
+using Peerly.Gateway.Api.Features.Teachers.GetTeacherGroup;
+using Peerly.Gateway.Api.Features.Teachers.GetTeacherHomework;
+using Peerly.Gateway.Api.Features.Teachers.GetTeacherSubmittedHomework;
+using Peerly.Gateway.Api.Features.Teachers.ListSubmittedHomeworkOverview;
+using Peerly.Gateway.Api.Features.Teachers.ListTeacherCourseGroups;
+using Peerly.Gateway.Api.Features.Teachers.ListTeacherCourseHomeworks;
 using Peerly.Gateway.Api.Features.Teachers.ListTeacherCourses;
 using Peerly.Gateway.Api.Infrastructure;
 using Peerly.Gateway.Api.Infrastructure.Filters;
@@ -52,6 +58,102 @@ public sealed class TeacherController : ApplicationControllerBase
         {
             TeacherId = User.GetUserId(),
             CourseId = courseId
+        };
+        return await _mediator.Send(query, cancellationToken);
+    }
+
+    [HasPermission(ApiPermission.ListTeacherCourseHomeworks)]
+    [HttpGet("courses/{courseId:long}/homeworks")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult<ListTeacherCourseHomeworksQueryResponse>> ListCourseHomeworks(
+        [FromRoute] long courseId,
+        CancellationToken cancellationToken)
+    {
+        var query = new ListTeacherCourseHomeworksQuery
+        {
+            TeacherId = User.GetUserId(),
+            CourseId = courseId
+        };
+        return await _mediator.Send(query, cancellationToken);
+    }
+
+    [HasPermission(ApiPermission.ListTeacherCourseGroups)]
+    [HttpGet("courses/{courseId:long}/groups")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult<ListTeacherCourseGroupsQueryResponse>> ListCourseGroups(
+        [FromRoute] long courseId,
+        CancellationToken cancellationToken)
+    {
+        var query = new ListTeacherCourseGroupsQuery
+        {
+            TeacherId = User.GetUserId(),
+            CourseId = courseId
+        };
+        return await _mediator.Send(query, cancellationToken);
+    }
+
+    [HasPermission(ApiPermission.GetTeacherGroup)]
+    [HttpGet("groups/{groupId:long}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult<GetTeacherGroupQueryResponse>> GetGroup(
+        [FromRoute] long groupId,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetTeacherGroupQuery
+        {
+            TeacherId = User.GetUserId(),
+            GroupId = groupId
+        };
+        return await _mediator.Send(query, cancellationToken);
+    }
+
+    [HasPermission(ApiPermission.GetTeacherHomework)]
+    [HttpGet("homeworks/{homeworkId:long}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult<GetTeacherHomeworkQueryResponse>> GetHomework(
+        [FromRoute] long homeworkId,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetTeacherHomeworkQuery
+        {
+            TeacherId = User.GetUserId(),
+            HomeworkId = homeworkId
+        };
+        return await _mediator.Send(query, cancellationToken);
+    }
+
+    [HasPermission(ApiPermission.ListSubmittedHomeworkOverview)]
+    [HttpGet("homeworks/{homeworkId:long}/submissions")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult<ListSubmittedHomeworkOverviewQueryResponse>> ListSubmittedHomeworkOverview(
+        [FromRoute] long homeworkId,
+        CancellationToken cancellationToken)
+    {
+        var query = new ListSubmittedHomeworkOverviewQuery
+        {
+            HomeworkId = homeworkId,
+            TeacherId = User.GetUserId()
+        };
+        return await _mediator.Send(query, cancellationToken);
+    }
+
+    [HasPermission(ApiPermission.GetTeacherSubmittedHomework)]
+    [HttpGet("submissions/{submissionId:long}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult<GetTeacherSubmittedHomeworkQueryResponse>> GetTeacherSubmittedHomework(
+        [FromRoute] long submissionId,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetTeacherSubmittedHomeworkQuery
+        {
+            SubmittedHomeworkId = submissionId,
+            TeacherId = User.GetUserId()
         };
         return await _mediator.Send(query, cancellationToken);
     }

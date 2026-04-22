@@ -5,6 +5,10 @@ using Peerly.Gateway.Api.Extensions;
 using Peerly.Gateway.Api.Models.Auth;
 using Peerly.Gateway.Api.Models.Common;
 using Peerly.Gateway.Api.Models.Course;
+using Peerly.Gateway.Api.Models.Files;
+using Peerly.Gateway.Api.Models.Group;
+using Peerly.Gateway.Api.Models.Homeworks;
+using Peerly.Gateway.Api.Models.Participants;
 using AuthProto = Peerly.Auth.V1;
 using CoreProto = Peerly.Core.V1;
 
@@ -30,6 +34,8 @@ public sealed class CommonProfile : Profile
         CreateMap<CoreProto.CourseStatus, CourseStatus>()
             .ConvertUsingEnumMapping(opt => opt.ThrowFor(CoreProto.CourseStatus.Unknown))
             .ReverseMap();
+        CreateMap<CoreProto.HomeworkStatus, HomeworkStatus>()
+            .ConvertUsingEnumMapping(opt => opt.ThrowFor(CoreProto.HomeworkStatus.Unknown));
         CreateMap<PaginationInfo, CoreProto.PaginationInfo>();
         CreateMap<CoreProto.CourseInfo, CourseInfo>();
 
@@ -40,5 +46,11 @@ public sealed class CommonProfile : Profile
         CreateMap<CoreProto.OtherError, OtherError>();
         CreateMap<CoreProto.OtherError.Types.ErrorType, ErrorType>()
             .ConvertUsingEnumMapping(opt => opt.ThrowFor(CoreProto.OtherError.Types.ErrorType.Unspecified));
+
+        CreateMap<CoreProto.TeacherInfo, TeacherInfo>();
+        CreateMap<CoreProto.StudentInfo, StudentInfo>();
+        CreateMap<CoreProto.GroupInfo, GroupInfo>();
+        CreateMap<CoreProto.File, File>();
+        CreateMap<CoreProto.SubmittedReviewInfo, SubmittedReviewInfo>();
     }
 }
