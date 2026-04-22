@@ -109,6 +109,7 @@ jobs:
           revision-image-url: ${{ steps.image.outputs.url }}
           revision-service-account-id: ${{ secrets.RUNTIME_SA_ID_STAGE }}
           revision-memory: 256Mb
+          revision-execution-timeout: 30
           revision-env: |
             ASPNETCORE_ENVIRONMENT=Staging
             PeerlyAuthGrpcClientOptions__Target=${{ secrets.AUTH_GRPC_TARGET_STAGE }}
@@ -166,6 +167,7 @@ jobs:
           revision-image-url: ${{ steps.image.outputs.url }}
           revision-service-account-id: ${{ secrets.RUNTIME_SA_ID }}
           revision-memory: 256Mb
+          revision-execution-timeout: 30
           revision-env: |
             ASPNETCORE_ENVIRONMENT=Production
             PeerlyAuthGrpcClientOptions__Target=${{ secrets.AUTH_GRPC_TARGET }}

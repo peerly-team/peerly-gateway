@@ -4,6 +4,7 @@
     <PackageReference Include="Google.Protobuf"/>
     <PackageReference Include="Grpc.Core"/>
     <PackageReference Include="Grpc.Net.Client"/>
+    <PackageReference Include="Grpc.Net.Client.Web" />
     <PackageReference Include="Grpc.Net.ClientFactory" />
   </ItemGroup>
   <ItemGroup>
