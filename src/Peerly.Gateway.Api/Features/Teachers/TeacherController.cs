@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Peerly.Gateway.Api.Features.Teachers.GetTeacherCourse;
 using Peerly.Gateway.Api.Features.Teachers.GetTeacherGroup;
+using Peerly.Gateway.Api.Features.Homeworks.GetTeacherSubmittedHomework;
 using Peerly.Gateway.Api.Features.Homeworks.ListSubmittedHomeworkOverview;
 using Peerly.Gateway.Api.Features.Teachers.GetTeacherHomework;
 using Peerly.Gateway.Api.Features.Teachers.ListTeacherCourseGroups;
@@ -121,6 +122,22 @@ public sealed class TeacherController : ApplicationControllerBase
         {
             TeacherId = User.GetUserId(),
             CourseId = courseId
+        };
+        return await _mediator.Send(query, cancellationToken);
+    }
+
+    [HasPermission(ApiPermission.GetTeacherSubmittedHomework)]
+    [HttpGet("submissions/{submissionId:long}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult<GetTeacherSubmittedHomeworkQueryResponse>> GetTeacherSubmittedHomework(
+        [FromRoute] long submissionId,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetTeacherSubmittedHomeworkQuery
+        {
+            SubmittedHomeworkId = submissionId,
+            TeacherId = User.GetUserId()
         };
         return await _mediator.Send(query, cancellationToken);
     }

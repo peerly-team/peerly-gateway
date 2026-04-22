@@ -9,7 +9,8 @@ public sealed class ListSubmittedHomeworkOverviewProfile : Profile
     public ListSubmittedHomeworkOverviewProfile()
     {
         CreateMap<ListSubmittedHomeworkOverviewQuery, Proto.V1ListSubmittedHomeworkOverviewRequest>();
-        CreateMap<Proto.V1ListSubmittedHomeworkOverviewResponse, ListSubmittedHomeworkOverviewQueryResponse>();
+        CreateMap<Proto.V1ListSubmittedHomeworkOverviewResponse, ListSubmittedHomeworkOverviewQueryResponse>()
+            .ForMember(dst => dst.SubmittedHomeworks, opt => opt.MapFrom(src => src.SubmittedHomeworkResults));
         CreateMap<Proto.V1ListSubmittedHomeworkOverviewResponse.Types.SubmittedHomeworkOverview, SubmittedHomeworkOverviewInfo>();
     }
 }
