@@ -22,6 +22,8 @@ public static class Program
         // Hosting
         builder.Services.InstallServicesFromExecutingAssembly(builder.Configuration);
 
+        builder.Services.AddCors();
+
         // ExternalClients
         builder.Services.ConfigureExternalClientsServices(builder.Configuration);
 
