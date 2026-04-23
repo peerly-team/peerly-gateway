@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,11 +15,14 @@ public static class ProgramConfigureExtensions
     {
         app.UseRouting();
 
-        app.UseMiddleware<CloudflareAccessMiddleware>();
+        app.UseMiddleware<OriginKeyMiddleware>();
 
         var config = app.ApplicationServices.GetRequiredService<IConfiguration>();
         var allowedOrigins = config.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
         var allowedOriginSuffixes = config.GetSection("Cors:AllowedOriginSuffixes").Get<string[]>() ?? [];
+        var allowedOriginPatterns = (config.GetSection("Cors:AllowedOriginPatterns").Get<string[]>() ?? [])
+            .Select(p => new Regex(p, RegexOptions.Compiled | RegexOptions.IgnoreCase))
+            .ToArray();
 
         app.UseCors(
             policyBuilder => policyBuilder
@@ -28,8 +32,11 @@ public static class ProgramConfigureExtensions
                         return true;
 
                     var host = new Uri(origin).Host;
-                    return allowedOriginSuffixes.Any(suffix =>
-                        host.EndsWith(suffix, StringComparison.OrdinalIgnoreCase));
+                    if (allowedOriginSuffixes.Any(suffix =>
+                            host.EndsWith(suffix, StringComparison.OrdinalIgnoreCase)))
+                        return true;
+
+                    return allowedOriginPatterns.Any(pattern => pattern.IsMatch(origin));
                 })
                 .AllowAnyHeader()
                 .AllowCredentials()
