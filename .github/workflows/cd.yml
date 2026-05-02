@@ -11,6 +11,10 @@ concurrency:
 
 env:
   IMAGE_NAME: peerly-gateway
+  REGISTRY: ghcr.io/peerly-team
+
+permissions:
+  contents: read
 
 jobs:
   build-and-test:
@@ -34,24 +38,24 @@ jobs:
   build-push:
     needs: build-and-test
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v4
 
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
       - name: Build image
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
         run: |
-          if [ -z "$REGISTRY" ]; then
-            echo "::error::REGISTRY secret is not set"
-            exit 1
-          fi
-          IMAGE="$REGISTRY/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
           docker build -t "$IMAGE" .
 
       - name: Scan image for vulnerabilities
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
-          image-ref: ${{ secrets.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           severity: CRITICAL,HIGH
           exit-code: 1
           ignore-unfixed: true
@@ -59,127 +63,71 @@ jobs:
           trivyignores: .trivyignore
 
       - name: Push image
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-          REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
-          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-        run: |
-          IMAGE="$REGISTRY/${{ env.IMAGE_NAME }}:${{ github.sha }}"
-          echo "$REGISTRY_PASSWORD" | docker login "$REGISTRY" -u "$REGISTRY_USERNAME" --password-stdin
-          docker push "$IMAGE"
+        run: docker push "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
 
-  deploy-yc-stage:
+  # =========================================================================
+  # K3S — bump image tag in peerly-manifests; Argo CD picks up and syncs.
+  # =========================================================================
+  deploy-k3s-stage:
     needs: build-push
     runs-on: ubuntu-latest
     steps:
-      - name: Install YC CLI
-        run: |
-          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -n -i /opt/yc
-          echo "/opt/yc/bin" >> "$GITHUB_PATH"
-
-      - name: Configure YC CLI
-        run: |
-          echo '${{ secrets.DEPLOY_SA_KEY_STAGE }}' > /tmp/sa-key.json
-          yc config set service-account-key /tmp/sa-key.json
-          yc config set folder-id ${{ secrets.DEPLOY_SCOPE_ID_STAGE }}
-
-      - name: Resolve Lockbox current version
-        id: lockbox
-        run: |
-          JSON=$(yc lockbox secret get --id ${{ secrets.SECRETS_STORE_ID_STAGE }} --format json)
-          VER=$(echo "$JSON" | jq -r '.current_version.id // .currentVersion.id // empty')
-          if [ -z "$VER" ]; then
-            echo "::error::Failed to resolve Lockbox current version id"
-            exit 1
-          fi
-          echo "version=$VER" >> "$GITHUB_OUTPUT"
-
-      - name: Resolve image reference
-        id: image
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-        run: echo "url=$REGISTRY/${{ env.IMAGE_NAME }}:${{ github.sha }}" >> "$GITHUB_OUTPUT"
-
-      - name: Deploy stage container
-        uses: yc-actions/yc-sls-container-deploy@v2
+      - name: Checkout peerly-manifests
+        uses: actions/checkout@v4
         with:
-          yc-sa-json-credentials: ${{ secrets.DEPLOY_SA_KEY_STAGE }}
-          container-name: peerly-gateway-stage
-          folder-id: ${{ secrets.DEPLOY_SCOPE_ID_STAGE }}
-          revision-image-url: ${{ steps.image.outputs.url }}
-          revision-service-account-id: ${{ secrets.RUNTIME_SA_ID_STAGE }}
-          revision-memory: 256Mb
-          revision-execution-timeout: 30
-          revision-env: |
-            ASPNETCORE_ENVIRONMENT=Staging
-            PeerlyAuthGrpcClientOptions__Target=${{ secrets.AUTH_GRPC_TARGET_STAGE }}
-            PeerlyCoreGrpcClientOptions__Target=${{ secrets.CORE_GRPC_TARGET_STAGE }}
-            Swagger__Username=${{ secrets.SWAGGER_USERNAME }}
-          revision-secrets: |
-            Swagger__Password=${{ secrets.SECRETS_STORE_ID_STAGE }}/${{ steps.lockbox.outputs.version }}/swagger_password
-            CloudflareAccess__Secret=${{ secrets.SECRETS_STORE_ID_STAGE }}/${{ steps.lockbox.outputs.version }}/cf_secret_stage
+          repository: peerly-team/peerly-manifests
+          ref: main
+          fetch-depth: 0
+          token: ${{ secrets.MANIFESTS_PAT }}
+          path: manifests
 
-      - name: Allow unauthenticated invoke
-        run: yc serverless container allow-unauthenticated-invoke --name peerly-gateway-stage --folder-id ${{ secrets.DEPLOY_SCOPE_ID_STAGE }}
+      - name: Bump gateway-stage image tag
+        run: |
+          cd manifests
+          sed -i "s|^  tag: .*|  tag: ${{ github.sha }}|" values/gateway-stage.yaml
+          git config user.email "ci-bot@peerly.local"
+          git config user.name "peerly-ci-bot"
+          if git diff --quiet values/gateway-stage.yaml; then
+            echo "no change"
+            exit 0
+          fi
+          git add values/gateway-stage.yaml
+          git commit -m "stage(gateway): bump image to ${{ github.sha }}"
+          for i in 1 2 3; do
+            git pull --rebase && git push && exit 0
+            sleep 5
+          done
+          echo "::error::failed to push after 3 attempts"
+          exit 1
 
-      - name: Cleanup SA key
-        if: always()
-        run: rm -f /tmp/sa-key.json
-
-  deploy-yc-prod:
-    needs: build-push
+  deploy-k3s-prod:
+    needs: deploy-k3s-stage
     runs-on: ubuntu-latest
     steps:
-      - name: Install YC CLI
-        run: |
-          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -n -i /opt/yc
-          echo "/opt/yc/bin" >> "$GITHUB_PATH"
-
-      - name: Configure YC CLI
-        run: |
-          echo '${{ secrets.DEPLOY_SA_KEY }}' > /tmp/sa-key.json
-          yc config set service-account-key /tmp/sa-key.json
-          yc config set folder-id ${{ secrets.DEPLOY_SCOPE_ID }}
-
-      - name: Resolve Lockbox current version
-        id: lockbox
-        run: |
-          JSON=$(yc lockbox secret get --id ${{ secrets.SECRETS_STORE_ID }} --format json)
-          VER=$(echo "$JSON" | jq -r '.current_version.id // .currentVersion.id // empty')
-          if [ -z "$VER" ]; then
-            echo "::error::Failed to resolve Lockbox current version id"
-            exit 1
-          fi
-          echo "version=$VER" >> "$GITHUB_OUTPUT"
-
-      - name: Resolve image reference
-        id: image
-        env:
-          REGISTRY: ${{ secrets.REGISTRY }}
-        run: echo "url=$REGISTRY/${{ env.IMAGE_NAME }}:${{ github.sha }}" >> "$GITHUB_OUTPUT"
-
-      - name: Deploy prod container
-        uses: yc-actions/yc-sls-container-deploy@v2
+      - name: Checkout peerly-manifests
+        uses: actions/checkout@v4
         with:
-          yc-sa-json-credentials: ${{ secrets.DEPLOY_SA_KEY }}
-          container-name: peerly-gateway
-          folder-id: ${{ secrets.DEPLOY_SCOPE_ID }}
-          revision-image-url: ${{ steps.image.outputs.url }}
-          revision-service-account-id: ${{ secrets.RUNTIME_SA_ID }}
-          revision-memory: 256Mb
-          revision-execution-timeout: 30
-          revision-env: |
-            ASPNETCORE_ENVIRONMENT=Production
-            PeerlyAuthGrpcClientOptions__Target=${{ secrets.AUTH_GRPC_TARGET }}
-            PeerlyCoreGrpcClientOptions__Target=${{ secrets.CORE_GRPC_TARGET }}
-            Swagger__Username=${{ secrets.SWAGGER_USERNAME }}
-          revision-secrets: |
-            Swagger__Password=${{ secrets.SECRETS_STORE_ID }}/${{ steps.lockbox.outputs.version }}/swagger_password
-            CloudflareAccess__Secret=${{ secrets.SECRETS_STORE_ID }}/${{ steps.lockbox.outputs.version }}/cf_secret_prod
+          repository: peerly-team/peerly-manifests
+          ref: main
+          fetch-depth: 0
+          token: ${{ secrets.MANIFESTS_PAT }}
+          path: manifests
 
-      - name: Allow unauthenticated invoke
-        run: yc serverless container allow-unauthenticated-invoke --name peerly-gateway --folder-id ${{ secrets.DEPLOY_SCOPE_ID }}
-
-      - name: Cleanup SA key
-        if: always()
-        run: rm -f /tmp/sa-key.json
+      - name: Bump gateway-prod image tag
+        run: |
+          cd manifests
+          sed -i "s|^  tag: .*|  tag: ${{ github.sha }}|" values/gateway-prod.yaml
+          git config user.email "ci-bot@peerly.local"
+          git config user.name "peerly-ci-bot"
+          if git diff --quiet values/gateway-prod.yaml; then
+            echo "no change"
+            exit 0
+          fi
+          git add values/gateway-prod.yaml
+          git commit -m "prod(gateway): bump image to ${{ github.sha }}"
+          for i in 1 2 3; do
+            git pull --rebase && git push && exit 0
+            sleep 5
+          done
+          echo "::error::failed to push after 3 attempts"
+          exit 1
