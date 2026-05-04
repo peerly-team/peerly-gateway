@@ -1,6 +1,5 @@
 using MediatR;
 using Peerly.Gateway.Api.Models.Common;
-using Peerly.Gateway.Api.Models.Course;
 
 namespace Peerly.Gateway.Api.Features.Courses.UpdateCourse;
 
@@ -15,5 +14,4 @@ public sealed record UpdateCourseRequestBody
 {
     public required string Name { get; init; }
     public string? Description { get; init; }
-    public required CourseStatus Status { get; init; }
 }

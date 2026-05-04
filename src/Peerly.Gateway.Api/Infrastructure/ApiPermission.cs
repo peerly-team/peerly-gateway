@@ -4,7 +4,7 @@ public enum ApiPermission
 {
     GenerateUploadUrl = 1,
     Logout = 2,
-    ListCourses = 3,
+    CreateCourseFile = 3,
     CreateCourse = 4,
     GetStudentCourse = 5,
     UpdateCourse = 6,
@@ -50,5 +50,6 @@ public enum ApiPermission
     GetTeacherSubmittedHomework = 46,
     CorrectSubmittedHomeworkMark = 47,
     DeleteHomework = 48,
-    DeleteHomeworkFile = 49
+    DeleteHomeworkFile = 49,
+    PublishCourse = 50
 }
