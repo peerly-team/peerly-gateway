@@ -18,7 +18,6 @@ public static class GrpcRegistrationExtensions
                 var options = sp.GetRequiredService<IOptionsSnapshot<PeerlyCoreGrpcClientOptions>>().Value;
                 o.Address = new Uri(options.Target);
             })
-            .AddHttpMessageHandler<YcIamTokenHandler>()
             .ConfigurePrimaryHttpMessageHandler(BuildGrpcWebHandler);
     }
 
@@ -30,7 +29,6 @@ public static class GrpcRegistrationExtensions
                     var options = sp.GetRequiredService<IOptionsSnapshot<PeerlyAuthGrpcClientOptions>>().Value;
                     o.Address = new Uri(options.Target);
                 })
-            .AddHttpMessageHandler<YcIamTokenHandler>()
             .ConfigurePrimaryHttpMessageHandler(BuildGrpcWebHandler);
     }
 
