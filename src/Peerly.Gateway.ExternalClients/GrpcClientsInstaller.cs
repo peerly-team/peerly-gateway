@@ -20,8 +20,6 @@ internal sealed class GrpcClientsInstaller : IInstaller
             .AddOptions<PeerlyCoreGrpcClientOptions>()
             .BindConfiguration(PeerlyCoreGrpcClientOptions.SectionName);
 
-        services.AddTransient<YcIamTokenHandler>();
-
         AddPeerlyCoreGrpcClients(services);
         AddPeerlyAuthGrpcClients(services);
     }
