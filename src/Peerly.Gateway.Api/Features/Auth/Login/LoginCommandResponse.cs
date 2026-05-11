@@ -12,4 +12,5 @@ public sealed record LoginCommandResponse : IAuthTokenResponse
 public sealed record LoginResponseBody
 {
     public required long UserId { get; init; }
+    public required Role Role { get; init; }
 }

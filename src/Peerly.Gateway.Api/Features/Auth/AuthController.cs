@@ -32,6 +32,7 @@ public sealed class AuthController : ApplicationControllerBase
     [ProducesDefaultResponseType(typeof(ProblemDetails))]
     public async Task<ActionResult<LoginResponseBody>> Login(
         [FromBody] LoginRequestBody requestBody,
+        [FromServices] IAccessTokenRoleReader roleReader,
         CancellationToken cancellationToken)
     {
         var query = new LoginCommand
@@ -40,7 +41,11 @@ public sealed class AuthController : ApplicationControllerBase
         };
         var response = await _mediator.Send(query, cancellationToken);
 
-        return MatchResult(response, success => Ok(new LoginResponseBody { UserId = success.UserId }));
+        return MatchResult(response, success => Ok(new LoginResponseBody
+        {
+            UserId = success.UserId,
+            Role = roleReader.ReadRole(success.Token.AccessToken)
+        }));
     }
 
     [AllowAnonymous]
