@@ -13,4 +13,10 @@ internal static class ClaimsPrincipalExtensions
 
         return long.Parse(value, CultureInfo.InvariantCulture);
     }
+
+    public static string GetRole(this ClaimsPrincipal user)
+    {
+        return user.FindFirstValue(ClaimTypes.Role)
+            ?? throw new InvalidOperationException($"ClaimsPrincipal is missing required '{ClaimTypes.Role}' claim.");
+    }
 }
