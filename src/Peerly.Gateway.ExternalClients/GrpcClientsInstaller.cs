@@ -32,6 +32,7 @@ internal sealed class GrpcClientsInstaller : IInstaller
         services.AddPeerlyCoreGrpcClient<SubmissionService.SubmissionServiceClient>();
         services.AddPeerlyCoreGrpcClient<ParticipantService.ParticipantServiceClient>();
         services.AddPeerlyCoreGrpcClient<GroupService.GroupServiceClient>();
+        services.AddPeerlyCoreGrpcClient<UserService.UserServiceClient>();
     }
 
     private static void AddPeerlyAuthGrpcClients(IServiceCollection services)
