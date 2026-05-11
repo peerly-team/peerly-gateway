@@ -31,6 +31,10 @@ public sealed class CommonProfile : Profile
         CreateMap<AuthProto.OtherError.Types.ErrorType, ErrorType>()
             .ConvertUsingEnumMapping(opt => opt.ThrowFor(AuthProto.OtherError.Types.ErrorType.Unspecified));
 
+        CreateMap<CoreProto.Role, Role>()
+            .ConvertUsingEnumMapping(opt => opt.ThrowFor(CoreProto.Role.Unknown))
+            .ReverseMap();
+
         CreateMap<CoreProto.CourseStatus, CourseStatus>()
             .ConvertUsingEnumMapping(opt => opt.ThrowFor(CoreProto.CourseStatus.Unknown))
             .ReverseMap();
