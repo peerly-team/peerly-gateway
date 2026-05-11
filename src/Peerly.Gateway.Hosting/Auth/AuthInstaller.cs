@@ -42,7 +42,7 @@ internal sealed class AuthInstaller : IInstaller
             .AddPolicy(ApiPermission.ListStudentCourses.ToString(), p => p.RequireRole(Role.Student))
             .AddPolicy(ApiPermission.GetTeacherCourse.ToString(), p => p.RequireRole(Role.Teacher))
             .AddPolicy(ApiPermission.GetStudentCourse.ToString(), p => p.RequireRole(Role.Student))
-            .AddPolicy(ApiPermission.ListCourseParticipants.ToString(), p => p.RequireRole(Role.Teacher))
+            .AddPolicy(ApiPermission.ListCourseParticipants.ToString(), p => p.RequireRole(Role.Teacher, Role.Student))
             // Groups
             .AddPolicy(ApiPermission.CreateGroup.ToString(), p => p.RequireRole(Role.Teacher))
             .AddPolicy(ApiPermission.UpdateGroup.ToString(), p => p.RequireRole(Role.Teacher))
