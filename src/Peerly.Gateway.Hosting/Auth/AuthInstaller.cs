@@ -29,6 +29,7 @@ internal sealed class AuthInstaller : IInstaller
             .AddAuthorizationBuilder()
             // Authorization
             .AddPolicy(ApiPermission.Logout.ToString(), p => p.RequireRole(Role.AllRoles))
+            .AddPolicy(ApiPermission.GetMyRole.ToString(), p => p.RequireRole(Role.AllRoles))
             // Storage
             .AddPolicy(ApiPermission.GenerateUploadUrl.ToString(), p => p.RequireRole(Role.AllRoles))
             .AddPolicy(ApiPermission.GenerateDownloadUrl.ToString(), p => p.RequireRole(Role.AllRoles))
