@@ -8,6 +8,7 @@ public sealed class GetTeacherHomeworkProfile : Profile
     public GetTeacherHomeworkProfile()
     {
         CreateMap<GetTeacherHomeworkQuery, Proto.V1GetTeacherHomeworkRequest>();
-        CreateMap<Proto.V1GetTeacherHomeworkResponse, GetTeacherHomeworkQueryResponse>();
+        CreateMap<Proto.V1GetTeacherHomeworkResponse, GetTeacherHomeworkQueryResponse>()
+            .ForMember(dst => dst.Files, opt => opt.MapFrom(src => src.HomeworkFiles));
     }
 }

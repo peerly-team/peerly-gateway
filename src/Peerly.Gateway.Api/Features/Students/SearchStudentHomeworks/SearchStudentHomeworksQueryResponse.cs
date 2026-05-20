@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using Peerly.Gateway.Api.Models.Homeworks;
 
-namespace Peerly.Gateway.Api.Features.Students.ListStudentCourseHomeworks;
+namespace Peerly.Gateway.Api.Features.Students.SearchStudentHomeworks;
 
-public sealed record ListStudentCourseHomeworksQueryResponse
+public sealed record SearchStudentHomeworksQueryResponse
 {
     public required IReadOnlyCollection<StudentHomeworkInfo> StudentHomeworkInfos { get; init; }
 }

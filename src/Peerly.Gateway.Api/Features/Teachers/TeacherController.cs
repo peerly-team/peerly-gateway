@@ -11,9 +11,11 @@ using Peerly.Gateway.Api.Features.Teachers.ListSubmittedHomeworkOverview;
 using Peerly.Gateway.Api.Features.Teachers.ListTeacherCourseGroups;
 using Peerly.Gateway.Api.Features.Teachers.ListTeacherCourseHomeworks;
 using Peerly.Gateway.Api.Features.Teachers.ListTeacherCourses;
+using Peerly.Gateway.Api.Features.Teachers.SearchTeacherHomeworks;
 using Peerly.Gateway.Api.Infrastructure;
 using Peerly.Gateway.Api.Infrastructure.Filters;
 using Peerly.Gateway.Api.Models.Course;
+using Peerly.Gateway.Api.Models.Homeworks;
 
 namespace Peerly.Gateway.Api.Features.Teachers;
 
@@ -106,6 +108,24 @@ public sealed class TeacherController : ApplicationControllerBase
         {
             TeacherId = User.GetUserId(),
             GroupId = groupId
+        };
+        return await _mediator.Send(query, cancellationToken);
+    }
+
+    [HasPermission(ApiPermission.SearchTeacherHomeworks)]
+    [HttpGet("homeworks")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult<SearchTeacherHomeworksQueryResponse>> SearchHomeworks(
+        [FromQuery] SearchHomeworksFilter filter,
+        [FromQuery] PaginationInfo paginationInfo,
+        CancellationToken cancellationToken)
+    {
+        var query = new SearchTeacherHomeworksQuery
+        {
+            TeacherId = User.GetUserId(),
+            Filter = filter,
+            PaginationInfo = paginationInfo
         };
         return await _mediator.Send(query, cancellationToken);
     }

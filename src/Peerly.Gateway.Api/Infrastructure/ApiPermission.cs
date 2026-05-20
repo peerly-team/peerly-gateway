@@ -53,5 +53,7 @@ public enum ApiPermission
     DeleteHomeworkFile = 49,
     PublishCourse = 50,
     GetMyRole = 51,
-    SearchUsers = 52
+    SearchUsers = 52,
+    SearchStudentHomeworks = 53,
+    SearchTeacherHomeworks = 54
 }
