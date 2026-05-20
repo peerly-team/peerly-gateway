@@ -39,7 +39,11 @@ public sealed class CommonProfile : Profile
             .ConvertUsingEnumMapping(opt => opt.ThrowFor(CoreProto.CourseStatus.Unknown))
             .ReverseMap();
         CreateMap<CoreProto.HomeworkStatus, HomeworkStatus>()
-            .ConvertUsingEnumMapping(opt => opt.ThrowFor(CoreProto.HomeworkStatus.Unknown));
+            .ConvertUsingEnumMapping(opt => opt.ThrowFor(CoreProto.HomeworkStatus.Unknown))
+            .ReverseMap();
+        CreateMap<SearchHomeworksFilter, CoreProto.SearchHomeworksFilter>();
+        CreateMap<CoreProto.StudentHomeworkInfo, StudentHomeworkInfo>();
+        CreateMap<CoreProto.TeacherHomeworkInfo, TeacherHomeworkInfo>();
         CreateMap<PaginationInfo, CoreProto.PaginationInfo>();
         CreateMap<CoreProto.CourseInfo, CourseInfo>();
 

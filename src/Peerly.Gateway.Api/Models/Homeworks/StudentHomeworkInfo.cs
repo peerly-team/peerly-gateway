@@ -2,7 +2,7 @@ using System;
 
 namespace Peerly.Gateway.Api.Models.Homeworks;
 
-public sealed record HomeworkInfo
+public sealed record StudentHomeworkInfo
 {
     public required long Id { get; init; }
     public required string Name { get; init; }
@@ -12,5 +12,5 @@ public sealed record HomeworkInfo
     public required DateTimeOffset Deadline { get; init; }
     public required DateTimeOffset ReviewDeadline { get; init; }
     public required int AmountOfReviewers { get; init; }
-    public required int DiscrepancyThreshold { get; init; }
+    public required bool IsHomeworkSubmitted { get; init; }
 }

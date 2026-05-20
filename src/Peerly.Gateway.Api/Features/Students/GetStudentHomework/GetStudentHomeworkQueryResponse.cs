@@ -6,7 +6,7 @@ namespace Peerly.Gateway.Api.Features.Students.GetStudentHomework;
 
 public sealed record GetStudentHomeworkQueryResponse
 {
-    public required HomeworkInfo HomeworkInfo { get; init; }
+    public required StudentHomeworkInfo StudentHomeworkInfo { get; init; }
     public long? SubmittedHomeworkId { get; init; }
     public required IReadOnlyList<File> Files { get; init; }
 }

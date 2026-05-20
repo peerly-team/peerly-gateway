@@ -9,9 +9,11 @@ using Peerly.Gateway.Api.Features.Students.GetStudentHomework;
 using Peerly.Gateway.Api.Features.Students.ListStudentCourseGroups;
 using Peerly.Gateway.Api.Features.Students.ListStudentCourseHomeworks;
 using Peerly.Gateway.Api.Features.Students.ListStudentCourses;
+using Peerly.Gateway.Api.Features.Students.SearchStudentHomeworks;
 using Peerly.Gateway.Api.Infrastructure;
 using Peerly.Gateway.Api.Infrastructure.Filters;
 using Peerly.Gateway.Api.Models.Course;
+using Peerly.Gateway.Api.Models.Homeworks;
 
 namespace Peerly.Gateway.Api.Features.Students;
 
@@ -104,6 +106,24 @@ public sealed class StudentController : ApplicationControllerBase
         {
             StudentId = User.GetUserId(),
             GroupId = groupId
+        };
+        return await _mediator.Send(query, cancellationToken);
+    }
+
+    [HasPermission(ApiPermission.SearchStudentHomeworks)]
+    [HttpGet("homeworks")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult<SearchStudentHomeworksQueryResponse>> SearchHomeworks(
+        [FromQuery] SearchHomeworksFilter filter,
+        [FromQuery] PaginationInfo paginationInfo,
+        CancellationToken cancellationToken)
+    {
+        var query = new SearchStudentHomeworksQuery
+        {
+            StudentId = User.GetUserId(),
+            Filter = filter,
+            PaginationInfo = paginationInfo
         };
         return await _mediator.Send(query, cancellationToken);
     }
