@@ -9,6 +9,7 @@ using Peerly.Gateway.Api.Features.Auth.Login;
 using Peerly.Gateway.Api.Features.Auth.Logout;
 using Peerly.Gateway.Api.Features.Auth.Refresh;
 using Peerly.Gateway.Api.Features.Auth.Register;
+using Peerly.Gateway.Api.Features.Auth.ResendConfirmationEmail;
 using Peerly.Gateway.Api.Infrastructure;
 using Peerly.Gateway.Api.Infrastructure.Abstractions;
 using Peerly.Gateway.Api.Infrastructure.Filters;
@@ -114,20 +115,37 @@ public sealed class AuthController : ApplicationControllerBase
             });
     }
 
-[AllowAnonymous]
-[HttpGet("confirm-email")]
-[ProducesResponseType(StatusCodes.Status200OK)]
-[ProducesDefaultResponseType(typeof(ProblemDetails))]
-public async Task<ActionResult> ConfirmEmail(
-    [FromQuery] ConfirmEmailFilter filter,
-    CancellationToken cancellationToken)
-{
-    var query = new ConfirmEmailCommand
+    [AllowAnonymous]
+    [HttpGet("confirm-email")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult<ConfirmEmailResponseBody>> ConfirmEmail(
+        [FromQuery] ConfirmEmailFilter filter,
+        CancellationToken cancellationToken)
     {
-        Filter = filter
-    };
-    var response = await _mediator.Send(query, cancellationToken);
+        var query = new ConfirmEmailCommand
+        {
+            Filter = filter
+        };
+        var response = await _mediator.Send(query, cancellationToken);
 
-    return MatchResult(response, Ok);
-}
+        return MatchResult(response, success => Ok(new ConfirmEmailResponseBody { UserId = success.UserId }));
+    }
+
+    [AllowAnonymous]
+    [HttpPost("resend-confirmation-email")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult> ResendConfirmationEmail(
+        [FromBody] ResendConfirmationEmailRequestBody requestBody,
+        CancellationToken cancellationToken)
+    {
+        var command = new ResendConfirmationEmailCommand
+        {
+            RequestBody = requestBody
+        };
+        var response = await _mediator.Send(command, cancellationToken);
+
+        return MatchResult(response);
+    }
 }

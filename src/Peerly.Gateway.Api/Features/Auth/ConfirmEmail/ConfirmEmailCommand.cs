@@ -3,7 +3,7 @@ using Peerly.Gateway.Api.Models.Common;
 
 namespace Peerly.Gateway.Api.Features.Auth.ConfirmEmail;
 
-public sealed record ConfirmEmailCommand : IRequest<Result<EmptyResponse>>
+public sealed record ConfirmEmailCommand : IRequest<Result<ConfirmEmailCommandResponse>>
 {
     public required ConfirmEmailFilter Filter { get; init; }
 }
