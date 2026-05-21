@@ -10,7 +10,7 @@ public sealed class CreateSubmittedHomeworkProfile : Profile
     {
         CreateMap<CreateSubmittedHomeworkCommand, V1CreateSubmittedHomeworkRequest>()
             .IncludeMembers(c => c.RequestBody);
-        CreateMap<CreateSubmittedHomeworkRequestBody, V1CreateSubmittedHomeworkRequest>();
+        CreateMap<CreateSubmittedHomeworkRequestBody, V1CreateSubmittedHomeworkRequest>(MemberList.Source);
         CreateMap<V1CreateSubmittedHomeworkResponse, Result<CreateSubmittedHomeworkCommandResponse>>();
         CreateMap<V1CreateSubmittedHomeworkResponse.Types.Success, CreateSubmittedHomeworkCommandResponse>(MemberList.Source);
     }

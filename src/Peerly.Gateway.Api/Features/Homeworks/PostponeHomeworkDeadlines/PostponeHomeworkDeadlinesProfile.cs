@@ -12,7 +12,7 @@ public sealed class PostponeHomeworkDeadlinesProfile : Profile
         CreateMap<PostponeHomeworkDeadlinesCommand, V1PostponeHomeworkDeadlinesRequest>()
             .IncludeMembers(c => c.RequestBody);
 
-        CreateMap<PostponeHomeworkDeadlinesRequestBody, V1PostponeHomeworkDeadlinesRequest>()
+        CreateMap<PostponeHomeworkDeadlinesRequestBody, V1PostponeHomeworkDeadlinesRequest>(MemberList.None)
             .ForMember(dst => dst.Deadline, opt =>
             {
                 opt.PreCondition(src => src.Deadline.HasValue);

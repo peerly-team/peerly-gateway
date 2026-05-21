@@ -10,7 +10,7 @@ public sealed class AddGroupTeacherProfile : Profile
     {
         CreateMap<AddGroupTeacherCommand, V1AddGroupTeacherRequest>()
             .IncludeMembers(c => c.RequestBody);
-        CreateMap<AddGroupTeacherRequestBody, V1AddGroupTeacherRequest>();
+        CreateMap<AddGroupTeacherRequestBody, V1AddGroupTeacherRequest>(MemberList.Source);
         CreateMap<V1AddGroupTeacherResponse, Result<EmptyResponse>>();
         CreateMap<V1AddGroupTeacherResponse.Types.Success, EmptyResponse>(MemberList.Source);
     }

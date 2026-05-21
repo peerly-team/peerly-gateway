@@ -10,7 +10,7 @@ public sealed class LoginProfile : Profile
     {
         CreateMap<LoginCommand, V1LoginRequest>()
             .IncludeMembers(c => c.RequestBody);
-        CreateMap<LoginRequestBody, V1LoginRequest>();
+        CreateMap<LoginRequestBody, V1LoginRequest>(MemberList.Source);
         CreateMap<V1LoginResponse, Result<LoginCommandResponse>>();
         CreateMap<V1LoginResponse.Types.Success, LoginCommandResponse>(MemberList.Source);
     }
