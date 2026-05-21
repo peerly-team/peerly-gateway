@@ -16,4 +16,4 @@ plugins:
       - base_namespace=
 inputs:
   - module: buf.build/peerly/peerly-core:a74f062f116e4d368d23d8f256e28b60
-  - module: buf.build/peerly/peerly-auth:8aeb9f6455224fbca7252714f90abd24
+  - module: buf.build/peerly/peerly-auth:ff3c2201743042f38e4362e605a4d989
