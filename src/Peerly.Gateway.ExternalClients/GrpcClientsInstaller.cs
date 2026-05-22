@@ -4,6 +4,7 @@ using Peerly.Auth.V1;
 using Peerly.Core.V1;
 using Peerly.Gateway.ExternalClients.Extensions;
 using Peerly.Gateway.ExternalClients.Options;
+using Peerly.Gateway.ExternalClients.ServiceVersions;
 using Peerly.Gateway.Tools.Abstractions;
 
 namespace Peerly.Gateway.ExternalClients;
@@ -19,6 +20,15 @@ internal sealed class GrpcClientsInstaller : IInstaller
         services
             .AddOptions<PeerlyCoreGrpcClientOptions>()
             .BindConfiguration(PeerlyCoreGrpcClientOptions.SectionName);
+        services
+            .AddOptions<ServiceVersionOverrideOptions>()
+            .BindConfiguration(ServiceVersionOverrideOptions.SectionName);
+
+        services.AddHttpContextAccessor();
+        services.AddScoped<IServiceVersionContext, ServiceVersionContext>();
+        services.AddScoped<IServiceVersionResolver, ServiceVersionResolver>();
+        services.AddSingleton<IGrpcChannelPool, GrpcChannelPool>();
+        services.AddSingleton<HeaderPropagationInterceptor>();
 
         AddPeerlyCoreGrpcClients(services);
         AddPeerlyAuthGrpcClients(services);
@@ -32,11 +42,10 @@ internal sealed class GrpcClientsInstaller : IInstaller
         services.AddPeerlyCoreGrpcClient<SubmissionService.SubmissionServiceClient>();
         services.AddPeerlyCoreGrpcClient<ParticipantService.ParticipantServiceClient>();
         services.AddPeerlyCoreGrpcClient<GroupService.GroupServiceClient>();
-        services.AddPeerlyCoreGrpcClient<UserService.UserServiceClient>();
     }
 
     private static void AddPeerlyAuthGrpcClients(IServiceCollection services)
     {
-        services.AddPeerlyAuthGrpcClients<AuthService.AuthServiceClient>();
+        services.AddPeerlyAuthGrpcClient<AuthService.AuthServiceClient>();
     }
 }

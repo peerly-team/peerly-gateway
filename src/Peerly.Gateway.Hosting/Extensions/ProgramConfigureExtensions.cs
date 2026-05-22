@@ -16,6 +16,7 @@ public static class ProgramConfigureExtensions
         app.UseRouting();
 
         app.UseMiddleware<OriginKeyMiddleware>();
+        app.UseMiddleware<ServiceVersionMiddleware>();
 
         var config = app.ApplicationServices.GetRequiredService<IConfiguration>();
         var allowedOrigins = config.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
