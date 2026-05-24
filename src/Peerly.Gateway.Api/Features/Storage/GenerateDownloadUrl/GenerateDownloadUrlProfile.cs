@@ -7,7 +7,8 @@ public sealed class GenerateDownloadUrlProfile : Profile
 {
     public GenerateDownloadUrlProfile()
     {
-        CreateMap<GenerateDownloadUrlQuery, V1GenerateDownloadUrlRequest>();
+        CreateMap<GenerateDownloadUrlQuery, V1GenerateDownloadUrlRequest>()
+            .ForMember(dst => dst.IsReviewer, opt => opt.Ignore());
         CreateMap<V1GenerateDownloadUrlResponse, GenerateDownloadUrlQueryResponse>();
     }
 }

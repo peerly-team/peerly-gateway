@@ -10,7 +10,7 @@ public sealed class UpdateSubmittedHomeworkProfile : Profile
     {
         CreateMap<UpdateSubmittedHomeworkCommand, V1UpdateSubmittedHomeworkRequest>()
             .IncludeMembers(c => c.RequestBody);
-        CreateMap<UpdateSubmittedHomeworkRequestBody, V1UpdateSubmittedHomeworkRequest>();
+        CreateMap<UpdateSubmittedHomeworkRequestBody, V1UpdateSubmittedHomeworkRequest>(MemberList.Source);
         CreateMap<V1UpdateSubmittedHomeworkResponse, Result<EmptyResponse>>();
         CreateMap<V1UpdateSubmittedHomeworkResponse.Types.Success, EmptyResponse>(MemberList.Source);
     }

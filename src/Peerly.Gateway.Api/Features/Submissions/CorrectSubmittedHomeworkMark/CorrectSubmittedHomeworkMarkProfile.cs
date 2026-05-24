@@ -10,7 +10,7 @@ public sealed class CorrectSubmittedHomeworkMarkProfile : Profile
     {
         CreateMap<CorrectSubmittedHomeworkMarkCommand, V1CorrectSubmittedHomeworkMarkRequest>()
             .IncludeMembers(c => c.RequestBody);
-        CreateMap<CorrectSubmittedHomeworkMarkRequestBody, V1CorrectSubmittedHomeworkMarkRequest>();
+        CreateMap<CorrectSubmittedHomeworkMarkRequestBody, V1CorrectSubmittedHomeworkMarkRequest>(MemberList.Source);
         CreateMap<V1CorrectSubmittedHomeworkMarkResponse, Result<EmptyResponse>>();
         CreateMap<V1CorrectSubmittedHomeworkMarkResponse.Types.Success, EmptyResponse>(MemberList.Source);
     }

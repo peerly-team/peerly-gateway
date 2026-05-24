@@ -10,7 +10,7 @@ public sealed class UpdateGroupProfile : Profile
     {
         CreateMap<UpdateGroupCommand, V1UpdateGroupRequest>()
             .IncludeMembers(c => c.RequestBody);
-        CreateMap<UpdateGroupRequestBody, V1UpdateGroupRequest>();
+        CreateMap<UpdateGroupRequestBody, V1UpdateGroupRequest>(MemberList.Source);
         CreateMap<V1UpdateGroupResponse, Result<EmptyResponse>>();
         CreateMap<V1UpdateGroupResponse.Types.Success, EmptyResponse>(MemberList.Source);
     }

@@ -10,7 +10,7 @@ public sealed class UpdateCourseProfile : Profile
     {
         CreateMap<UpdateCourseCommand, V1UpdateCourseRequest>()
             .IncludeMembers(c => c.RequestBody);
-        CreateMap<UpdateCourseRequestBody, V1UpdateCourseRequest>();
+        CreateMap<UpdateCourseRequestBody, V1UpdateCourseRequest>(MemberList.Source);
         CreateMap<V1UpdateCourseResponse, Result<EmptyResponse>>();
         CreateMap<V1UpdateCourseResponse.Types.Success, EmptyResponse>(MemberList.Source);
     }

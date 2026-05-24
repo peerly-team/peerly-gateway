@@ -10,7 +10,7 @@ public sealed class CreateGroupProfile : Profile
     {
         CreateMap<CreateGroupCommand, V1CreateGroupRequest>()
             .IncludeMembers(c => c.RequestBody);
-        CreateMap<CreateGroupRequestBody, V1CreateGroupRequest>();
+        CreateMap<CreateGroupRequestBody, V1CreateGroupRequest>(MemberList.Source);
         CreateMap<V1CreateGroupResponse, Result<CreateGroupCommandResponse>>();
         CreateMap<V1CreateGroupResponse.Types.Success, CreateGroupCommandResponse>(MemberList.Source);
     }

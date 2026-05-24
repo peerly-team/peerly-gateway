@@ -10,7 +10,7 @@ public sealed class ResendConfirmationEmailProfile : Profile
     {
         CreateMap<ResendConfirmationEmailCommand, V1ResendConfirmationEmailRequest>()
             .IncludeMembers(c => c.RequestBody);
-        CreateMap<ResendConfirmationEmailRequestBody, V1ResendConfirmationEmailRequest>();
+        CreateMap<ResendConfirmationEmailRequestBody, V1ResendConfirmationEmailRequest>(MemberList.Source);
         CreateMap<V1ResendConfirmationEmailResponse, Result<EmptyResponse>>();
         CreateMap<V1ResendConfirmationEmailResponse.Types.Success, EmptyResponse>(MemberList.Source);
     }

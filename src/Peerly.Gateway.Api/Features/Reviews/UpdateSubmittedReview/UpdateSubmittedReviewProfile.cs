@@ -10,7 +10,7 @@ public sealed class UpdateSubmittedReviewProfile : Profile
     {
         CreateMap<UpdateSubmittedReviewCommand, V1UpdateSubmittedReviewRequest>()
             .IncludeMembers(c => c.RequestBody);
-        CreateMap<UpdateSubmittedReviewRequestBody, V1UpdateSubmittedReviewRequest>();
+        CreateMap<UpdateSubmittedReviewRequestBody, V1UpdateSubmittedReviewRequest>(MemberList.Source);
         CreateMap<V1UpdateSubmittedReviewResponse, Result<EmptyResponse>>();
         CreateMap<V1UpdateSubmittedReviewResponse.Types.Success, EmptyResponse>(MemberList.Source);
     }

@@ -10,7 +10,7 @@ public sealed class CreateCourseFileProfile : Profile
     {
         CreateMap<CreateCourseFileCommand, V1CreateCourseFileRequest>()
             .IncludeMembers(c => c.RequestBody);
-        CreateMap<CreateCourseFileRequestBody, V1CreateCourseFileRequest>();
+        CreateMap<CreateCourseFileRequestBody, V1CreateCourseFileRequest>(MemberList.Source);
         CreateMap<V1CreateCourseFileResponse, Result<CreateCourseFileCommandResponse>>();
         CreateMap<V1CreateCourseFileResponse.Types.Success, CreateCourseFileCommandResponse>(MemberList.Source);
     }

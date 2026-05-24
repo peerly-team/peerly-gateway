@@ -10,7 +10,7 @@ public sealed class RegisterProfile : Profile
     {
         CreateMap<RegisterCommand, V1RegisterRequest>()
             .IncludeMembers(c => c.RequestBody);
-        CreateMap<RegisterRequestBody, V1RegisterRequest>();
+        CreateMap<RegisterRequestBody, V1RegisterRequest>(MemberList.Source);
         CreateMap<V1RegisterResponse, Result<RegisterCommandResponse>>();
         CreateMap<V1RegisterResponse.Types.Success, RegisterCommandResponse>(MemberList.Source);
     }
