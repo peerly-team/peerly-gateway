@@ -9,7 +9,9 @@ public sealed class GetTeacherSubmittedHomeworkProfile : Profile
     public GetTeacherSubmittedHomeworkProfile()
     {
         CreateMap<GetTeacherSubmittedHomeworkQuery, Proto.V1GetTeacherSubmittedHomeworkRequest>();
-        CreateMap<Proto.V1GetTeacherSubmittedHomeworkResponse, GetTeacherSubmittedHomeworkQueryResponse>();
+        CreateMap<Proto.V1GetTeacherSubmittedHomeworkResponse, GetTeacherSubmittedHomeworkQueryResponse>()
+            .ForMember(dst => dst.ReviewersMark, opt => opt.MapFrom(src => src.HasReviewersMark ? (int?)src.ReviewersMark : null))
+            .ForMember(dst => dst.TeacherMark, opt => opt.MapFrom(src => src.HasTeacherMark ? (int?)src.TeacherMark : null));
         CreateMap<Proto.TeacherSubmittedReviewInfo, TeacherSubmittedReviewInfo>();
     }
 }
