@@ -9,6 +9,6 @@ public sealed record GetTeacherSubmittedHomeworkQueryResponse
     public required SubmittedHomeworkInfo SubmittedHomework { get; init; }
     public required StudentInfo Student { get; init; }
     public required IReadOnlyList<TeacherSubmittedReviewInfo> SubmittedReviews { get; init; }
-    public required int ReviewersMark { get; init; }
-    public required int? TeacherMark { get; init; }
+    public int? ReviewersMark { get; init; }
+    public int? TeacherMark { get; init; }
 }
