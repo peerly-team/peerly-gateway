@@ -55,5 +55,9 @@ public enum ApiPermission
     GetMyRole = 51,
     SearchUsers = 52,
     SearchStudentHomeworks = 53,
-    SearchTeacherHomeworks = 54
+    SearchTeacherHomeworks = 54,
+    GetStudent = 55,
+    UpdateStudent = 56,
+    GetTeacher = 57,
+    UpdateTeacher = 58
 }

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Peerly.Gateway.Api.Features.Teachers.GetTeacher;
 using Peerly.Gateway.Api.Features.Teachers.GetTeacherCourse;
 using Peerly.Gateway.Api.Features.Teachers.GetTeacherGroup;
 using Peerly.Gateway.Api.Features.Teachers.GetTeacherHomework;
@@ -12,6 +13,7 @@ using Peerly.Gateway.Api.Features.Teachers.ListTeacherCourseGroups;
 using Peerly.Gateway.Api.Features.Teachers.ListTeacherCourseHomeworks;
 using Peerly.Gateway.Api.Features.Teachers.ListTeacherCourses;
 using Peerly.Gateway.Api.Features.Teachers.SearchTeacherHomeworks;
+using Peerly.Gateway.Api.Features.Teachers.UpdateTeacher;
 using Peerly.Gateway.Api.Infrastructure;
 using Peerly.Gateway.Api.Infrastructure.Filters;
 using Peerly.Gateway.Api.Models.Course;
@@ -28,6 +30,36 @@ public sealed class TeacherController : ApplicationControllerBase
     public TeacherController(IMediator mediator)
     {
         _mediator = mediator;
+    }
+
+    [HasPermission(ApiPermission.GetTeacher)]
+    [HttpGet("me")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult<GetTeacherQueryResponse>> GetTeacher(CancellationToken cancellationToken)
+    {
+        var query = new GetTeacherQuery
+        {
+            TeacherId = User.GetUserId()
+        };
+        return await _mediator.Send(query, cancellationToken);
+    }
+
+    [HasPermission(ApiPermission.UpdateTeacher)]
+    [HttpPut("me")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult> UpdateTeacher(
+        [FromBody] UpdateTeacherRequestBody requestBody,
+        CancellationToken cancellationToken)
+    {
+        var command = new UpdateTeacherCommand
+        {
+            TeacherId = User.GetUserId(),
+            RequestBody = requestBody
+        };
+        var response = await _mediator.Send(command, cancellationToken);
+        return MatchResult(response);
     }
 
     [HasPermission(ApiPermission.ListTeacherCourses)]
