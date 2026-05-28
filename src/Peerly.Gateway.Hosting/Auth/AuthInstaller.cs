@@ -39,9 +39,9 @@ internal sealed class AuthInstaller : IInstaller
             .AddPolicy(ApiPermission.PublishCourse.ToString(), p => p.RequireRole(Role.Teacher))
             .AddPolicy(ApiPermission.DeleteCourse.ToString(), p => p.RequireRole(Role.Teacher))
             .AddPolicy(ApiPermission.CreateCourseFile.ToString(), p => p.RequireRole(Role.Teacher))
-            .AddPolicy(ApiPermission.ListTeacherCourses.ToString(), p => p.RequireRole(Role.Teacher))
+            .AddPolicy(ApiPermission.ListTeacherCourses.ToString(), p => p.RequireRole(Role.Teacher, Role.Admin))
             .AddPolicy(ApiPermission.ListStudentCourses.ToString(), p => p.RequireRole(Role.Student))
-            .AddPolicy(ApiPermission.GetTeacherCourse.ToString(), p => p.RequireRole(Role.Teacher))
+            .AddPolicy(ApiPermission.GetTeacherCourse.ToString(), p => p.RequireRole(Role.Teacher, Role.Admin))
             .AddPolicy(ApiPermission.GetStudentCourse.ToString(), p => p.RequireRole(Role.Student))
             .AddPolicy(ApiPermission.ListCourseParticipants.ToString(), p => p.RequireRole(Role.Teacher, Role.Student))
             // Profile
@@ -91,7 +91,7 @@ internal sealed class AuthInstaller : IInstaller
             .AddPolicy(ApiPermission.GetTeacherSubmittedHomework.ToString(), p => p.RequireRole(Role.Teacher))
             .AddPolicy(ApiPermission.CorrectSubmittedHomeworkMark.ToString(), p => p.RequireRole(Role.Teacher))
             // Users
-            .AddPolicy(ApiPermission.SearchUsers.ToString(), p => p.RequireRole(Role.Teacher, Role.Student));
+            .AddPolicy(ApiPermission.SearchUsers.ToString(), p => p.RequireRole(Role.Teacher, Role.Student, Role.Admin));
 
         services
             .AddAuthentication(
