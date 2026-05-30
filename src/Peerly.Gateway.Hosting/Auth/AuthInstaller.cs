@@ -90,6 +90,13 @@ internal sealed class AuthInstaller : IInstaller
             .AddPolicy(ApiPermission.ListSubmittedHomeworkOverview.ToString(), p => p.RequireRole(Role.Teacher))
             .AddPolicy(ApiPermission.GetTeacherSubmittedHomework.ToString(), p => p.RequireRole(Role.Teacher))
             .AddPolicy(ApiPermission.CorrectSubmittedHomeworkMark.ToString(), p => p.RequireRole(Role.Teacher))
+            // Rubrics
+            .AddPolicy(ApiPermission.CreateRubric.ToString(), p => p.RequireRole(Role.Teacher))
+            .AddPolicy(ApiPermission.UpdateRubric.ToString(), p => p.RequireRole(Role.Teacher))
+            .AddPolicy(ApiPermission.DeleteRubric.ToString(), p => p.RequireRole(Role.Teacher))
+            .AddPolicy(ApiPermission.GetTeacherRubric.ToString(), p => p.RequireRole(Role.Teacher))
+            .AddPolicy(ApiPermission.ListTeacherRubrics.ToString(), p => p.RequireRole(Role.Teacher))
+            .AddPolicy(ApiPermission.GetStudentRubric.ToString(), p => p.RequireRole(Role.Student))
             // Users
             .AddPolicy(ApiPermission.SearchUsers.ToString(), p => p.RequireRole(Role.Teacher, Role.Student, Role.Admin));
 

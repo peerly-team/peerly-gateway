@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using MediatR;
 using Peerly.Gateway.Api.Models.Common;
+using Peerly.Gateway.Api.Models.Homeworks;
 
 namespace Peerly.Gateway.Api.Features.Submissions.CreateSubmittedReview;
 
@@ -12,6 +14,6 @@ public sealed record CreateSubmittedReviewCommand : IRequest<Result<CreateSubmit
 
 public sealed record CreateSubmittedReviewRequestBody
 {
-    public required int Mark { get; init; }
+    public required IReadOnlyList<SubmittedReviewScoreInput> Scores { get; init; }
     public required string Comment { get; init; }
 }

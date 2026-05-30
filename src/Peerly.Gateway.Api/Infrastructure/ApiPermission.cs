@@ -59,5 +59,11 @@ public enum ApiPermission
     GetStudent = 55,
     UpdateStudent = 56,
     GetTeacher = 57,
-    UpdateTeacher = 58
+    UpdateTeacher = 58,
+    CreateRubric = 59,
+    UpdateRubric = 60,
+    DeleteRubric = 61,
+    GetTeacherRubric = 62,
+    ListTeacherRubrics = 63,
+    GetStudentRubric = 64
 }

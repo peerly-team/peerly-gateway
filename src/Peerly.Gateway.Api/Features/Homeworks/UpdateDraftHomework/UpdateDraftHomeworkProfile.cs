@@ -10,7 +10,8 @@ public sealed class UpdateDraftHomeworkProfile : Profile
     {
         CreateMap<UpdateDraftHomeworkCommand, V1UpdateDraftHomeworkRequest>()
             .IncludeMembers(c => c.RequestBody);
-        CreateMap<UpdateDraftHomeworkRequestBody, V1UpdateDraftHomeworkRequest>(MemberList.Source);
+        CreateMap<UpdateDraftHomeworkRequestBody, V1UpdateDraftHomeworkRequest>(MemberList.Source)
+            .ForMember(dst => dst.RubricId, opt => opt.Condition(src => src.RubricId.HasValue));
         CreateMap<V1UpdateDraftHomeworkResponse, Result<EmptyResponse>>();
         CreateMap<V1UpdateDraftHomeworkResponse.Types.Success, EmptyResponse>(MemberList.Source);
     }

@@ -16,7 +16,7 @@ public sealed record CreateCourseHomeworkRequestBody
     public required string Name { get; init; }
     public required int AmountOfReviewers { get; init; }
     public string? Description { get; init; }
-    public required string Checklist { get; init; }
+    public long? RubricId { get; init; }
     public required DateTimeOffset Deadline { get; init; }
     public required DateTimeOffset ReviewDeadline { get; init; }
     public required int DiscrepancyThreshold { get; init; }

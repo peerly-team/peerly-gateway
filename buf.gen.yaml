@@ -15,5 +15,5 @@ plugins:
       - file_suffix=Grpc.g.cs
       - base_namespace=
 inputs:
-  - module: buf.build/peerly/peerly-core:242137b446c94114b3bb85663c91cf07
+  - module: buf.build/peerly/peerly-core:614f56ecf52b4858951dd062f9e43308
   - module: buf.build/peerly/peerly-auth:ff3c2201743042f38e4362e605a4d989

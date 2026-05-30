@@ -9,6 +9,7 @@ using Peerly.Gateway.Api.Models.Files;
 using Peerly.Gateway.Api.Models.Group;
 using Peerly.Gateway.Api.Models.Homeworks;
 using Peerly.Gateway.Api.Models.Participants;
+using Peerly.Gateway.Api.Models.Rubrics;
 using AuthProto = Peerly.Auth.V1;
 using CoreProto = Peerly.Core.V1;
 
@@ -42,8 +43,12 @@ public sealed class CommonProfile : Profile
             .ConvertUsingEnumMapping(opt => opt.ThrowFor(CoreProto.HomeworkStatus.Unknown))
             .ReverseMap();
         CreateMap<SearchHomeworksFilter, CoreProto.SearchHomeworksFilter>();
-        CreateMap<CoreProto.StudentHomeworkInfo, StudentHomeworkInfo>();
-        CreateMap<CoreProto.TeacherHomeworkInfo, TeacherHomeworkInfo>();
+        CreateMap<CoreProto.StudentHomeworkInfo, StudentHomeworkInfo>()
+            .ForMember(dst => dst.RubricId,
+                opt => opt.MapFrom(src => src.HasRubricId ? (long?)src.RubricId : null));
+        CreateMap<CoreProto.TeacherHomeworkInfo, TeacherHomeworkInfo>()
+            .ForMember(dst => dst.RubricId,
+                opt => opt.MapFrom(src => src.HasRubricId ? (long?)src.RubricId : null));
         CreateMap<PaginationInfo, CoreProto.PaginationInfo>();
         CreateMap<CoreProto.CourseInfo, CourseInfo>();
 
@@ -60,5 +65,19 @@ public sealed class CommonProfile : Profile
         CreateMap<CoreProto.GroupInfo, GroupInfo>();
         CreateMap<CoreProto.File, File>();
         CreateMap<CoreProto.SubmittedReviewInfo, SubmittedReviewInfo>();
+        CreateMap<CoreProto.SubmittedReviewScoreInfo, SubmittedReviewScoreInfo>()
+            .ForMember(dst => dst.Comment,
+                opt => opt.MapFrom(src => src.HasComment ? src.Comment : null));
+        CreateMap<SubmittedReviewScoreInput, CoreProto.SubmittedReviewScoreInput>()
+            .ForMember(dst => dst.Comment,
+                opt => opt.Condition(src => src.Comment != null));
+
+        CreateMap<CoreProto.RubricInfo, RubricInfo>();
+        CreateMap<CoreProto.RubricCriterionInfo, RubricCriterionInfo>()
+            .ForMember(dst => dst.Description,
+                opt => opt.MapFrom(src => src.HasDescription ? src.Description : null));
+        CreateMap<RubricCriterionInput, CoreProto.RubricCriterionInput>()
+            .ForMember(dst => dst.Description,
+                opt => opt.Condition(src => src.Description != null));
     }
 }

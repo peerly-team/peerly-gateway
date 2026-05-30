@@ -7,8 +7,10 @@ using Peerly.Gateway.Api.Features.Teachers.GetTeacher;
 using Peerly.Gateway.Api.Features.Teachers.GetTeacherCourse;
 using Peerly.Gateway.Api.Features.Teachers.GetTeacherGroup;
 using Peerly.Gateway.Api.Features.Teachers.GetTeacherHomework;
+using Peerly.Gateway.Api.Features.Teachers.GetTeacherRubric;
 using Peerly.Gateway.Api.Features.Teachers.GetTeacherSubmittedHomework;
 using Peerly.Gateway.Api.Features.Teachers.ListSubmittedHomeworkOverview;
+using Peerly.Gateway.Api.Features.Teachers.ListTeacherRubrics;
 using Peerly.Gateway.Api.Features.Teachers.ListTeacherCourseGroups;
 using Peerly.Gateway.Api.Features.Teachers.ListTeacherCourseHomeworks;
 using Peerly.Gateway.Api.Features.Teachers.ListTeacherCourses;
@@ -205,6 +207,36 @@ public sealed class TeacherController : ApplicationControllerBase
         var query = new GetTeacherSubmittedHomeworkQuery
         {
             SubmittedHomeworkId = submissionId,
+            TeacherId = User.GetUserId()
+        };
+        return await _mediator.Send(query, cancellationToken);
+    }
+
+    [HasPermission(ApiPermission.ListTeacherRubrics)]
+    [HttpGet("rubrics")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult<ListTeacherRubricsQueryResponse>> ListRubrics(
+        CancellationToken cancellationToken)
+    {
+        var query = new ListTeacherRubricsQuery
+        {
+            TeacherId = User.GetUserId()
+        };
+        return await _mediator.Send(query, cancellationToken);
+    }
+
+    [HasPermission(ApiPermission.GetTeacherRubric)]
+    [HttpGet("rubrics/{rubricId:long}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult<GetTeacherRubricQueryResponse>> GetRubric(
+        [FromRoute] long rubricId,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetTeacherRubricQuery
+        {
+            RubricId = rubricId,
             TeacherId = User.GetUserId()
         };
         return await _mediator.Send(query, cancellationToken);

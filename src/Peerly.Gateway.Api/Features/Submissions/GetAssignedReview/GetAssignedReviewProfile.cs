@@ -11,6 +11,8 @@ public sealed class GetAssignedReviewProfile : Profile
         CreateMap<GetAssignedReviewQuery, Proto.V1GetAssignedReviewRequest>();
         CreateMap<Proto.V1GetAssignedReviewResponse, GetAssignedReviewQueryResponse>();
         CreateMap<Proto.V1GetAssignedReviewResponse.Types.SubmissionForReview, SubmissionForReview>()
+            .ForMember(dst => dst.RubricId,
+                opt => opt.MapFrom(src => src.HasRubricId ? (long?)src.RubricId : null))
             .ForMember(dst => dst.SubmittedReviewId,
                 opt => opt.MapFrom(src => src.HasSubmittedReviewId ? (long?)src.SubmittedReviewId : null));
     }
