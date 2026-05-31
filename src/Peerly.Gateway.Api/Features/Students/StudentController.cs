@@ -10,6 +10,7 @@ using Peerly.Gateway.Api.Features.Students.GetStudentHomework;
 using Peerly.Gateway.Api.Features.Students.ListStudentCourseGroups;
 using Peerly.Gateway.Api.Features.Students.ListStudentCourseHomeworks;
 using Peerly.Gateway.Api.Features.Students.ListStudentCourses;
+using Peerly.Gateway.Api.Features.Students.GetStudentRubric;
 using Peerly.Gateway.Api.Features.Students.SearchStudentHomeworks;
 using Peerly.Gateway.Api.Features.Students.UpdateStudent;
 using Peerly.Gateway.Api.Infrastructure;
@@ -172,6 +173,22 @@ public sealed class StudentController : ApplicationControllerBase
         {
             StudentId = User.GetUserId(),
             HomeworkId = homeworkId
+        };
+        return await _mediator.Send(query, cancellationToken);
+    }
+
+    [HasPermission(ApiPermission.GetStudentRubric)]
+    [HttpGet("rubrics/{rubricId:long}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult<GetStudentRubricQueryResponse>> GetRubric(
+        [FromRoute] long rubricId,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetStudentRubricQuery
+        {
+            RubricId = rubricId,
+            StudentId = User.GetUserId()
         };
         return await _mediator.Send(query, cancellationToken);
     }

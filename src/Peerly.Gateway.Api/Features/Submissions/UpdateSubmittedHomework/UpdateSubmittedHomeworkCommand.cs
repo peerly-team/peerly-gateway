@@ -12,5 +12,5 @@ public sealed record UpdateSubmittedHomeworkCommand : IRequest<Result<EmptyRespo
 
 public sealed record UpdateSubmittedHomeworkRequestBody
 {
-    public required string Comment { get; init; }
+    public required string? Comment { get; init; }
 }

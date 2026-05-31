@@ -12,5 +12,5 @@ public sealed record CreateSubmittedHomeworkCommand : IRequest<Result<CreateSubm
 
 public sealed record CreateSubmittedHomeworkRequestBody
 {
-    public required string Comment { get; init; }
+    public required string? Comment { get; init; }
 }
