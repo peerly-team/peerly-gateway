@@ -54,6 +54,7 @@ internal sealed class AuthInstaller : IInstaller
             .AddPolicy(ApiPermission.UpdateGroup.ToString(), p => p.RequireRole(Role.Teacher))
             .AddPolicy(ApiPermission.DeleteGroup.ToString(), p => p.RequireRole(Role.Teacher))
             .AddPolicy(ApiPermission.AddGroupStudent.ToString(), p => p.RequireRole(Role.Teacher))
+            .AddPolicy(ApiPermission.BulkAddGroupStudents.ToString(), p => p.RequireRole(Role.Teacher))
             .AddPolicy(ApiPermission.AddGroupTeacher.ToString(), p => p.RequireRole(Role.Teacher))
             .AddPolicy(ApiPermission.GetTeacherGroup.ToString(), p => p.RequireRole(Role.Teacher))
             .AddPolicy(ApiPermission.GetStudentGroup.ToString(), p => p.RequireRole(Role.Student))

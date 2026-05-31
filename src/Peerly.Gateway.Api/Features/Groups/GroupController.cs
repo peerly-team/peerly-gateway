@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Peerly.Gateway.Api.Features.Groups.AddGroupStudent;
 using Peerly.Gateway.Api.Features.Groups.AddGroupTeacher;
+using Peerly.Gateway.Api.Features.Groups.BulkAddGroupStudents;
 using Peerly.Gateway.Api.Features.Groups.CreateGroup;
 using Peerly.Gateway.Api.Features.Groups.CreateGroupHomework;
 using Peerly.Gateway.Api.Features.Groups.DeleteGroup;
@@ -80,7 +81,7 @@ public sealed class GroupController : ApplicationControllerBase
     }
 
     [HasPermission(ApiPermission.AddGroupStudent)]
-    [HttpPut("{groupId:long}/students")]
+    [HttpPut("{groupId:long}/student")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesDefaultResponseType(typeof(ProblemDetails))]
     public async Task<ActionResult> AddGroupStudent(
@@ -89,6 +90,25 @@ public sealed class GroupController : ApplicationControllerBase
         CancellationToken cancellationToken)
     {
         var command = new AddGroupStudentCommand
+        {
+            TeacherId = User.GetUserId(),
+            GroupId = groupId,
+            RequestBody = requestBody
+        };
+        var response = await _mediator.Send(command, cancellationToken);
+        return response.Match(Ok, BadRequest, OtherError);
+    }
+
+    [HasPermission(ApiPermission.BulkAddGroupStudents)]
+    [HttpPut("{groupId:long}/students")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesDefaultResponseType(typeof(ProblemDetails))]
+    public async Task<ActionResult<BulkAddGroupStudentsCommandResponse>> BulkAddGroupStudents(
+        [FromRoute] long groupId,
+        [FromBody] BulkAddGroupStudentsRequestBody requestBody,
+        CancellationToken cancellationToken)
+    {
+        var command = new BulkAddGroupStudentsCommand
         {
             TeacherId = User.GetUserId(),
             GroupId = groupId,

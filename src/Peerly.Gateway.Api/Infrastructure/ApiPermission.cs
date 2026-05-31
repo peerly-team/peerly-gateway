@@ -65,5 +65,6 @@ public enum ApiPermission
     DeleteRubric = 61,
     GetTeacherRubric = 62,
     ListTeacherRubrics = 63,
-    GetStudentRubric = 64
+    GetStudentRubric = 64,
+    BulkAddGroupStudents = 65
 }
