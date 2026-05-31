@@ -2,7 +2,7 @@ name: Preview
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened, labeled]
     branches: [main]
 
 concurrency:
@@ -58,3 +58,31 @@ jobs:
 
       - name: Push image
         run: docker push "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:pr-${{ github.event.number }}"
+
+  comment:
+    needs: build-push
+    if: contains(github.event.pull_request.labels.*.name, 'preview')
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Find existing preview comment
+        id: find
+        uses: peter-evans/find-comment@v3
+        with:
+          issue-number: ${{ github.event.number }}
+          comment-author: github-actions[bot]
+          body-includes: <!-- preview-gateway -->
+
+      - name: Upsert preview URL comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.find.outputs.comment-id }}
+          issue-number: ${{ github.event.number }}
+          edit-mode: replace
+          body: |
+            <!-- preview-gateway -->
+            🌐 **Gateway preview deployed:** https://api-gateway-pr-${{ github.event.number }}.prly.ru
+
+            Wired to stage auth/core via cluster DNS.
+            Image: `${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:pr-${{ github.event.number }}`

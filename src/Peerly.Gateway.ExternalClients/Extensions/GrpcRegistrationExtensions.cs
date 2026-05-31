@@ -1,42 +1,34 @@
 using System;
-using System.Net.Http;
-using Grpc.Net.Client.Web;
+using Grpc.Core;
+using Grpc.Core.Interceptors;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Peerly.Gateway.ExternalClients.Options;
+using Peerly.Gateway.ExternalClients.ServiceVersions;
 
 namespace Peerly.Gateway.ExternalClients.Extensions;
 
-public static class GrpcRegistrationExtensions
+internal static class GrpcRegistrationExtensions
 {
-    public static IHttpClientBuilder AddPeerlyCoreGrpcClient<TClient>(this IServiceCollection services)
-        where TClient : class
-    {
-        return services
-            .AddGrpcClient<TClient>((sp, o) =>
-            {
-                var options = sp.GetRequiredService<IOptionsSnapshot<PeerlyCoreGrpcClientOptions>>().Value;
-                o.Address = new Uri(options.Target);
-            })
-            .ConfigurePrimaryHttpMessageHandler(BuildGrpcWebHandler);
-    }
+    public static IServiceCollection AddPeerlyCoreGrpcClient<TClient>(this IServiceCollection services)
+        where TClient : ClientBase<TClient> =>
+        services.AddScoped(sp => CreateClient<TClient>(sp, "core",
+            sp.GetRequiredService<IOptionsSnapshot<PeerlyCoreGrpcClientOptions>>().Value.Target));
 
-    public static IHttpClientBuilder AddPeerlyAuthGrpcClients<TClient>(this IServiceCollection services)
-        where TClient : class
-    {
-        return services.AddGrpcClient<TClient>((sp, o) =>
-                {
-                    var options = sp.GetRequiredService<IOptionsSnapshot<PeerlyAuthGrpcClientOptions>>().Value;
-                    o.Address = new Uri(options.Target);
-                })
-            .ConfigurePrimaryHttpMessageHandler(BuildGrpcWebHandler);
-    }
+    public static IServiceCollection AddPeerlyAuthGrpcClient<TClient>(this IServiceCollection services)
+        where TClient : ClientBase<TClient> =>
+        services.AddScoped(sp => CreateClient<TClient>(sp, "auth",
+            sp.GetRequiredService<IOptionsSnapshot<PeerlyAuthGrpcClientOptions>>().Value.Target));
 
-    private static HttpMessageHandler BuildGrpcWebHandler() =>
-        new GrpcWebHandler(GrpcWebMode.GrpcWeb, new HttpClientHandler
-        {
-            // todo: отключить для нелокального окружения — небезопасно
-            ServerCertificateCustomValidationCallback =
-                HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
-        });
+    private static TClient CreateClient<TClient>(IServiceProvider sp, string serviceName, string defaultTarget)
+        where TClient : ClientBase<TClient>
+    {
+        var resolver = sp.GetRequiredService<IServiceVersionResolver>();
+        var pool = sp.GetRequiredService<IGrpcChannelPool>();
+        var interceptor = sp.GetRequiredService<HeaderPropagationInterceptor>();
+        var target = resolver.Resolve(serviceName, defaultTarget);
+        var channel = pool.GetOrCreate(target);
+        var invoker = channel.Intercept(interceptor);
+        return (TClient)Activator.CreateInstance(typeof(TClient), invoker)!;
+    }
 }
